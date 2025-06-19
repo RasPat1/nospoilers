@@ -1,24 +1,46 @@
 version: '3.8'
 
 services:
-  postgres:
+  # Development database
+  postgres-dev:
     image: postgres:15-alpine
-    container_name: nospoilers-postgres
+    container_name: nospoilers-postgres-dev
     restart: always
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nospoilers
+      POSTGRES_DB: nospoilers_dev
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./supabase-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./schema/complete-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nospoilers_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Test database (for demos and e2e tests)
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: nospoilers-postgres-test
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nospoilers_test
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./schema/complete-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nospoilers_test"]
       interval: 5s
       timeout: 5s
       retries: 5
 
 volumes:
-  postgres_data:
+  postgres_dev_data:
+  postgres_test_data:

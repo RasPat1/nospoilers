@@ -4,7 +4,7 @@ async function testSelectors() {
   console.log('🧪 Testing NoSpoilers selectors...\n');
   
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: process.env.HEADLESS !== 'false',
     slowMo: 100,
     devtools: true
   });

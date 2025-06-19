@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { broadcastUpdate } from '@/lib/websocket-broadcast'
 
 export async function DELETE(
   request: NextRequest,
@@ -36,6 +37,12 @@ export async function DELETE(
         { status: 500 }
       )
     }
+
+    // Broadcast the movie deletion to all connected clients
+    broadcastUpdate({
+      type: 'movie_deleted',
+      movieId: movieId
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

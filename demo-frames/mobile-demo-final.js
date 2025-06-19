@@ -19,7 +19,7 @@ async function runMobileDemo() {
   try {
     // Launch browser with mobile viewport
     browser = await puppeteer.launch({
-      headless: false,
+      headless: process.env.HEADLESS !== 'false',
       slowMo: 50,
       defaultViewport: { width: 390, height: 844 },
       args: ['--window-size=400,900', '--no-sandbox', '--disable-setuid-sandbox']

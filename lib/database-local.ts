@@ -1,14 +1,38 @@
 import { Pool } from 'pg';
 import { Movie, VotingSession, UserSession } from '@/lib/types';
 
+// Create connection pool based on environment
+const getConnectionString = () => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  
+  // Default connection strings based on NODE_ENV
+  if (process.env.NODE_ENV === 'test') {
+    return 'postgresql://postgres:postgres@localhost:5433/nospoilers_test';
+  }
+  
+  return 'postgresql://postgres:postgres@localhost:5432/nospoilers_dev';
+};
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/nospoilers',
+  connectionString: getConnectionString(),
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
 });
 
 export const localDb = {
+  // Raw query method
+  query: (text: string, params?: any[]) => pool.query(text, params),
+  
+  // Structured methods
   movies: {
     async getAll(): Promise<Movie[]> {
-      const result = await pool.query('SELECT * FROM movies ORDER BY created_at DESC');
+      const result = await pool.query(
+        'SELECT * FROM movies WHERE status = $1 ORDER BY created_at DESC',
+        ['candidate']
+      );
       return result.rows;
     },
     
@@ -62,10 +86,10 @@ export const localDb = {
   },
   
   votes: {
-    async create(sessionId: string, userSessionId: string, rankings: Record<string, number>): Promise<any> {
+    async create(sessionId: string, userSessionId: string, rankings: string[]): Promise<any> {
       const result = await pool.query(
         'INSERT INTO votes (voting_session_id, user_session_id, rankings) VALUES ($1, $2, $3) RETURNING *',
-        [sessionId, userSessionId, JSON.stringify(rankings)]
+        [sessionId, userSessionId, rankings]
       );
       return result.rows[0];
     },

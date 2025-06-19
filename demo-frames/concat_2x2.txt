@@ -1,0 +1,15 @@
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_0.png'
+duration 3
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_1.png'
+duration 3
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_2.png'
+duration 3.5
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_3.png'
+duration 3
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_4.png'
+duration 4
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_5.png'
+duration 4
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_6.png'
+duration 4
+file '/Users/ras/dev/nospoilers/demo-frames/grid_captioned_6.png'

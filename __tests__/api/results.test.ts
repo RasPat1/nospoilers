@@ -1,7 +1,7 @@
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
 process.env.NODE_ENV = 'test'
+process.env.DATABASE_TYPE = 'postgres'
+process.env.DATABASE_URL = 'postgresql://postgres:postgres@localhost:5433/nospoilers_test'
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
@@ -15,14 +15,14 @@ jest.mock('next/server', () => ({
   }
 }))
 
-// Mock the entire Supabase module before imports
-jest.mock('@supabase/supabase-js', () => {
+// Mock database abstraction module before imports
+jest.mock('@/lib/database', () => {
   const mockFrom = jest.fn()
   
   return {
-    createClient: jest.fn(() => ({
+    db: {
       from: mockFrom
-    })),
+    },
     __mockFrom: mockFrom // Export for test access
   }
 })
@@ -31,7 +31,7 @@ jest.mock('@supabase/supabase-js', () => {
 import { GET } from '@/app/api/votes/results/route'
 
 // Get the mock from function
-const { __mockFrom } = require('@supabase/supabase-js')
+const { __mockFrom } = require('@/lib/database')
 
 describe('/api/votes/results', () => {
   beforeEach(() => {

@@ -1,0 +1,9 @@
+file 'composite_000_start.png'
+duration 3
+file 'composite_001_matrix_added.png'
+duration 4
+file 'composite_002_interstellar_added.png'
+duration 3.5
+file 'composite_003_sarah_voted.png'
+duration 3.5
+file 'composite_003_sarah_voted.png'

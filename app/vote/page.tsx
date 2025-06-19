@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { getOrCreateSessionId } from '@/lib/session'
 import VotingInterface from '@/components/VotingInterface'
 import Results from '@/components/Results'
 import { Movie, VotingSession } from '@/lib/types'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -15,7 +16,33 @@ export default function Home() {
   const [hasVoted, setHasVoted] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [voteCount, setVoteCount] = useState(0)
   const router = useRouter()
+
+  // Set up real-time movie updates
+  const handleMovieAdded = useCallback((movie: Movie) => {
+    // Only add if not already in the list
+    setMovies(prev => {
+      const exists = prev.some(m => m.id === movie.id)
+      if (!exists) {
+        return [movie, ...prev]
+      }
+      return prev
+    })
+  }, [])
+
+  const handleMovieDeleted = useCallback((movieId: string) => {
+    setMovies(prev => prev.filter(m => m.id !== movieId))
+  }, [])
+
+  const handleVoteSubmitted = useCallback((data: { votingSessionId: string; voteCount: number }) => {
+    // Update vote count when a vote is submitted
+    if (votingSession && data.votingSessionId === votingSession.id) {
+      setVoteCount(data.voteCount)
+    }
+  }, [votingSession])
+
+  useWebSocket(handleMovieAdded, handleMovieDeleted, handleVoteSubmitted)
 
   useEffect(() => {
     const id = getOrCreateSessionId()
@@ -49,6 +76,15 @@ export default function Home() {
       if (sessionData.session && sessionData.hasVoted) {
         setHasVoted(true)
       }
+      
+      // Get initial vote count
+      if (sessionData.session) {
+        const voteCountRes = await fetch(`/api/votes/count?votingSessionId=${sessionData.session.id}`)
+        if (voteCountRes.ok) {
+          const { count } = await voteCountRes.json()
+          setVoteCount(count || 0)
+        }
+      }
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
@@ -64,13 +100,20 @@ export default function Home() {
         body: JSON.stringify({ ...movieData, sessionId })
       })
 
+      const data = await response.json()
+      
       if (response.ok) {
-        const { movie } = await response.json()
-        setMovies([movie, ...movies])
+        setMovies([data.movie, ...movies])
         setNewMovieTitle('')
+      } else if (response.status === 409) {
+        // Movie already exists
+        alert('This movie has already been added to the list!')
+      } else {
+        alert(`Error adding movie: ${data.error}`)
       }
     } catch (error) {
       console.error('Error adding movie:', error)
+      alert('Error adding movie. Please try again.')
     }
   }
 
@@ -169,6 +212,14 @@ export default function Home() {
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <div className="px-4 py-6 max-w-lg mx-auto">
         <h1 className="text-3xl font-bold text-center mb-6 text-neutral-900 dark:text-neutral-100">NoSpoilers Movie Night</h1>
+        
+        {votingSession && voteCount > 0 && (
+          <div className="bg-primary-50 dark:bg-primary-950 border border-primary-200 dark:border-primary-800 rounded-lg p-3 mb-4 text-center">
+            <p className="text-sm text-primary-700 dark:text-primary-300">
+              {voteCount} {voteCount === 1 ? 'person has' : 'people have'} voted
+            </p>
+          </div>
+        )}
         
         {votingSession?.status === 'closed' ? (
           <Results votingSession={votingSession} movies={movies} />

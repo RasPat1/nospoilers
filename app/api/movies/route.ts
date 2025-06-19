@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { broadcastUpdate } from '@/lib/websocket-broadcast'
 
 export async function GET() {
   const { data: movies, error } = await supabase
@@ -60,6 +61,30 @@ export async function POST(request: NextRequest) {
     if (plot) movieData.plot = plot
     if (genres && genres.length > 0) movieData.genres = genres
 
+    // Check if movie with same TMDB ID already exists
+    if (tmdb_id) {
+      const { data: existingMovie, error: checkError } = await supabase
+        .from('movies')
+        .select('*')
+        .eq('tmdb_id', tmdb_id)
+        .eq('status', 'candidate')
+        .single()
+      
+      if (checkError && checkError.code !== 'PGRST116') {
+        // PGRST116 means no rows found, which is what we want
+        console.error('Error checking for existing movie:', checkError)
+        return NextResponse.json({ error: 'Failed to check for existing movie' }, { status: 500 })
+      }
+      
+      if (existingMovie) {
+        console.log('Movie already exists:', existingMovie)
+        return NextResponse.json({ 
+          error: 'This movie has already been added', 
+          movie: existingMovie 
+        }, { status: 409 })
+      }
+    }
+
     console.log('Inserting movie data:', movieData)
 
     const { data: movie, error } = await supabase
@@ -74,6 +99,13 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Movie created successfully:', movie)
+    
+    // Broadcast the new movie to all connected clients
+    broadcastUpdate({
+      type: 'movie_added',
+      movie: movie
+    })
+    
     return NextResponse.json({ movie })
   } catch (error) {
     console.error('Unexpected error in POST /api/movies:', error)

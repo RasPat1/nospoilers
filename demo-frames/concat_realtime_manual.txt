@@ -1,0 +1,9 @@
+file 'realtime_captioned_0.png'
+duration 3
+file 'realtime_captioned_1.png'
+duration 4
+file 'realtime_captioned_2.png'
+duration 3.5
+file 'realtime_captioned_3.png'
+duration 4
+file 'realtime_captioned_3.png'

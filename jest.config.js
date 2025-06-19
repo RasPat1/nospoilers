@@ -13,6 +13,9 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@supabase|@supabase/supabase-js|@supabase/realtime-js|@supabase/functions-js|@supabase/storage-js|@supabase/node-fetch|whatwg-url)/)',
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

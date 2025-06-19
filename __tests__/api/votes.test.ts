@@ -1,21 +1,26 @@
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/votes/route'
 
-// Mock Supabase
-const mockSupabase = {
+// Mock database abstraction
+const mockDb = {
   from: jest.fn()
 }
 
-jest.mock('@/lib/supabase', () => ({
-  supabase: mockSupabase
+jest.mock('@/lib/database', () => ({
+  db: {
+    from: jest.fn()
+  }
 }))
+
+// Import db after mocking
+const { db } = require('@/lib/database')
 
 describe('/api/votes', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     
     // Default mock implementation
-    mockSupabase.from.mockImplementation((table) => {
+    db.from.mockImplementation((table) => {
       if (table === 'voting_sessions') {
         return {
           select: jest.fn(() => ({
@@ -97,7 +102,7 @@ describe('/api/votes', () => {
 
   it('should reject duplicate votes', async () => {
     // Mock existing vote
-    mockSupabase.from.mockImplementation((table) => {
+    db.from.mockImplementation((table) => {
       if (table === 'votes') {
         return {
           select: jest.fn(() => ({
@@ -140,7 +145,7 @@ describe('/api/votes', () => {
 
   it('should create voting session if none exists', async () => {
     // Mock no existing session
-    mockSupabase.from.mockImplementation((table) => {
+    db.from.mockImplementation((table) => {
       if (table === 'voting_sessions') {
         return {
           select: jest.fn(() => ({

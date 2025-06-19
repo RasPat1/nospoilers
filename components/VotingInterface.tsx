@@ -127,41 +127,43 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                         {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
                         {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
-                      {movie.director && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          Director: {movie.director}
-                        </p>
-                      )}
-                      {movie.actors && movie.actors.length > 0 && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          Starring: {movie.actors.slice(0, 3).join(', ')}
-                        </p>
-                      )}
-                      {movie.genres && movie.genres.length > 0 && (
-                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                          {movie.genres.join(', ')}
-                        </p>
+                      {showOverview[movie.id] && (
+                        <>
+                          {movie.director && (
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                              Director: {movie.director}
+                            </p>
+                          )}
+                          {movie.actors && movie.actors.length > 0 && (
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                              Starring: {movie.actors.slice(0, 3).join(', ')}
+                            </p>
+                          )}
+                          {movie.genres && movie.genres.length > 0 && (
+                            <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                              {movie.genres.join(', ')}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
-                    {movie.overview && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleOverview(movie.id)
-                        }}
-                        className="ml-2 p-1.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-                        title={showOverview[movie.id] ? "Hide overview" : "Show overview"}
-                      >
-                        {showOverview[movie.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleOverview(movie.id)
+                      }}
+                      className="ml-2 p-1.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                      title={showOverview[movie.id] ? "Hide details" : "Show details"}
+                    >
+                      {showOverview[movie.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                   {movie.overview && showOverview[movie.id] && (
                     <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
                       {movie.overview}
                     </p>
                   )}
-                  {movie.rotten_tomatoes_url && (
+                  {movie.rotten_tomatoes_url && showOverview[movie.id] && (
                     <a 
                       href={movie.rotten_tomatoes_url} 
                       target="_blank" 
@@ -243,41 +245,43 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                         {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
                         {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
-                      {movie.director && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          Director: {movie.director}
-                        </p>
-                      )}
-                      {movie.actors && movie.actors.length > 0 && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          Starring: {movie.actors.slice(0, 3).join(', ')}
-                        </p>
-                      )}
-                      {movie.genres && movie.genres.length > 0 && (
-                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                          {movie.genres.join(', ')}
-                        </p>
+                      {showOverview[movie.id] && (
+                        <>
+                          {movie.director && (
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                              Director: {movie.director}
+                            </p>
+                          )}
+                          {movie.actors && movie.actors.length > 0 && (
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                              Starring: {movie.actors.slice(0, 3).join(', ')}
+                            </p>
+                          )}
+                          {movie.genres && movie.genres.length > 0 && (
+                            <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                              {movie.genres.join(', ')}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
-                    {movie.overview && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleOverview(movie.id)
-                        }}
-                        className="ml-2 p-1.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-                        title={showOverview[movie.id] ? "Hide overview" : "Show overview"}
-                      >
-                        {showOverview[movie.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleOverview(movie.id)
+                      }}
+                      className="ml-2 p-1.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                      title={showOverview[movie.id] ? "Hide details" : "Show details"}
+                    >
+                      {showOverview[movie.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                   {movie.overview && showOverview[movie.id] && (
                     <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
                       {movie.overview}
                     </p>
                   )}
-                  {movie.rotten_tomatoes_url && (
+                  {movie.rotten_tomatoes_url && showOverview[movie.id] && (
                     <a 
                       href={movie.rotten_tomatoes_url} 
                       target="_blank" 

@@ -24,7 +24,7 @@ async function runMobileDemo() {
   } catch (e) {}
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: process.env.HEADLESS !== 'false',
     slowMo: 100,
     args: ['--window-size=400,900']
   });

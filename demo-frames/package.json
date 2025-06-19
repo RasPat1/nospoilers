@@ -12,9 +12,13 @@
     "demo:fast": "HEADLESS=true SLOW_MO=0 node demo-recorder.js"
   },
   "dependencies": {
-    "puppeteer": "^22.8.2"
+    "puppeteer": "^22.8.2",
+    "ws": "^8.18.2"
   },
   "engines": {
     "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
   }
 }

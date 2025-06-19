@@ -22,6 +22,8 @@ file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_010_voted.png'
 duration 3
 file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_011_results.png'
 duration 4
-file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_012_final.png'
+file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_012_irv_rounds.png'
+duration 5
+file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_013_final.png'
 duration 4
-file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_012_final.png'
+file '/Users/ras/dev/nospoilers/demo-frames/demo-frames/mobile_013_final.png'

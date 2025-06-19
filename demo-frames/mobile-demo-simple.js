@@ -277,9 +277,31 @@ async function runMobileDemo() {
     await page.goto('http://localhost:3000/results');
     await sleep(2500);
     await captureScene(page, 'results', 'Live voting results!', 4000);
+    
+    // Show IRV elimination rounds
+    await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const elim = buttons.find(b => b.textContent.includes('View Elimination Rounds'));
+      if (elim) elim.click();
+    });
+    await sleep(2000);
+    
+    // Scroll to show elimination rounds
+    await page.evaluate(() => {
+      const rounds = document.querySelector('div[class*="mt-4 space-y-4"]');
+      if (rounds) rounds.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    await sleep(1500);
+    
+    await captureScene(page, 'irv_rounds', 'Instant-Runoff Voting in action!', 5000);
 
     // Final
-    await captureScene(page, 'final', 'Movie night democracy! 🍿', 4000);
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    await sleep(1000);
+    
+    await captureScene(page, 'final', 'Fair winner by ranked choice! 🎬', 4000);
 
     console.log('\n✅ Demo complete!');
 

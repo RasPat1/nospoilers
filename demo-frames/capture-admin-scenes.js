@@ -6,7 +6,7 @@ async function captureAdminScenes() {
   console.log('🎬 Capturing Admin Scenes...\n');
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: process.env.HEADLESS !== 'false',
     slowMo: 50,
     args: ['--window-size=1920,1080']
   });

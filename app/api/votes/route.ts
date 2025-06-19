@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/database'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     // Get or create current voting session for this environment
     const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
     
-    let { data: votingSessions, error: sessionQueryError } = await supabase
+    let { data: votingSessions, error: sessionQueryError } = await db
       .from('voting_sessions')
       .select('*')
       .eq('status', 'open')
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (!votingSession) {
       console.log('No open voting session found, creating new one...')
-      const { data: newSession, error: sessionError } = await supabase
+      const { data: newSession, error: sessionError } = await db
         .from('voting_sessions')
         .insert([{ 
           status: 'open',
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
   // Create user session if it doesn't exist
-  const { data: userSessions, error: userSessionError } = await supabase
+  const { data: userSessions, error: userSessionError } = await db
     .from('user_sessions')
     .select('*')
     .eq('id', sessionId)
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
   if (!userSession) {
     console.log('Creating new user session:', sessionId)
-    const { error: insertError } = await supabase
+    const { error: insertError } = await db
       .from('user_sessions')
       .insert({ id: sessionId })
     
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Check if user already voted
-  const { data: existingVotes, error: existingVoteError } = await supabase
+  const { data: existingVotes, error: existingVoteError } = await db
     .from('votes')
     .select('*')
     .eq('voting_session_id', votingSession.id)
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
   }
 
     // Submit vote
-    const { data: newVote, error: voteError } = await supabase
+    const { data: newVote, error: voteError } = await db
       .from('votes')
       .insert({
         voting_session_id: votingSession.id,
@@ -118,6 +118,34 @@ export async function POST(request: NextRequest) {
       userSessionId: sessionId,
       environment: environment
     })
+
+    // Broadcast vote update via WebSocket
+    try {
+      // Get current vote count
+      const { data: voteCount } = await db
+        .from('votes')
+        .select('id', { count: 'exact' })
+        .eq('voting_session_id', votingSession.id)
+
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001'
+      const response = await fetch(`${wsUrl.replace('ws://', 'http://').replace('wss://', 'https://')}/broadcast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'vote_submitted',
+          votingSessionId: votingSession.id,
+          voteCount: voteCount?.length || 0,
+          timestamp: new Date().toISOString()
+        })
+      })
+
+      if (!response.ok) {
+        console.error('Failed to broadcast vote update:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error broadcasting vote update:', error)
+      // Don't fail the vote submission if broadcast fails
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

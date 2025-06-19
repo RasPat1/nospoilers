@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/movies/route'
 
-// Mock Supabase
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
+// Mock database abstraction
+jest.mock('@/lib/database', () => ({
+  db: {
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
@@ -12,6 +12,10 @@ jest.mock('@/lib/supabase', () => ({
               { id: '1', title: 'Movie 1', status: 'candidate' },
               { id: '2', title: 'Movie 2', status: 'candidate' }
             ],
+            error: null
+          })),
+          single: jest.fn(() => Promise.resolve({
+            data: null,
             error: null
           }))
         }))
