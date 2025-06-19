@@ -300,7 +300,7 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                 {onDeleteMovie && (
                   <button
                     onClick={() => {
-                      if (confirm(`Are you sure you want to remove "${movie.title}" from the list?`)) {
+                      if (confirm(`⚠️ WARNING: Are you sure you want to permanently delete "${movie.title}"?\n\nThis will BREAK THE VOTING if anyone has already ranked this movie! Only delete if you're certain nobody has voted yet.`)) {
                         onDeleteMovie(movie.id)
                       }
                     }}

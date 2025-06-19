@@ -1,0 +1,17 @@
+{
+  "name": "nospoilers-demo-recorder",
+  "version": "1.0.0",
+  "description": "Automated demo recorder for NoSpoilers voting app",
+  "main": "demo-recorder.js",
+  "scripts": {
+    "demo": "node demo-recorder.js",
+    "demo:headless": "HEADLESS=true node demo-recorder.js",
+    "demo:fast": "HEADLESS=true SLOW_MO=0 node demo-recorder.js"
+  },
+  "dependencies": {
+    "puppeteer": "^22.8.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

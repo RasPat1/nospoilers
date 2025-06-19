@@ -52,11 +52,14 @@ function calculateRankedChoiceWinner(votes: any[], movieIds: string[]): string |
 }
 
 export async function POST(request: NextRequest) {
-  // Get current open voting session
+  // Get current open voting session for this environment
+  const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
+  
   const { data: votingSession } = await supabase
     .from('voting_sessions')
     .select('*')
     .eq('status', 'open')
+    .eq('environment', environment)
     .single()
 
   if (!votingSession) {
