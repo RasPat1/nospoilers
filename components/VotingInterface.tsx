@@ -124,7 +124,8 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       <h3 className="font-semibold text-lg text-neutral-900 dark:text-neutral-100">{movie.title}</h3>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average && ` • ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
                       {movie.director && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -134,6 +135,11 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       {movie.actors && movie.actors.length > 0 && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
                           Starring: {movie.actors.slice(0, 3).join(', ')}
+                        </p>
+                      )}
+                      {movie.genres && movie.genres.length > 0 && (
+                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                          {movie.genres.join(', ')}
                         </p>
                       )}
                     </div>
@@ -234,7 +240,8 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       <h3 className="font-semibold text-lg text-neutral-900 dark:text-neutral-100">{movie.title}</h3>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average && ` • ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
                       {movie.director && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -244,6 +251,11 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       {movie.actors && movie.actors.length > 0 && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
                           Starring: {movie.actors.slice(0, 3).join(', ')}
+                        </p>
+                      )}
+                      {movie.genres && movie.genres.length > 0 && (
+                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                          {movie.genres.join(', ')}
                         </p>
                       )}
                     </div>

@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       rotten_tomatoes_score,
       director,
       actors,
-      plot
+      plot,
+      genres
     } = body
 
     if (!title || title.trim().length === 0) {
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest) {
     if (director) movieData.director = director
     if (actors && actors.length > 0) movieData.actors = actors
     if (plot) movieData.plot = plot
+    if (genres && genres.length > 0) movieData.genres = genres
 
     console.log('Inserting movie data:', movieData)
 

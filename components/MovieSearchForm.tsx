@@ -13,6 +13,7 @@ interface MovieSearchResult {
   overview: string
   director?: string
   actors?: string[]
+  genres?: string[]
 }
 
 interface MovieSearchFormProps {
@@ -80,7 +81,8 @@ export default function MovieSearchForm({ onAddMovie }: MovieSearchFormProps) {
       vote_average: movie.vote_average,
       overview: movie.overview,
       director: movie.director,
-      actors: movie.actors
+      actors: movie.actors,
+      genres: movie.genres
     }
     
     onAddMovie(movieData)
@@ -145,9 +147,23 @@ export default function MovieSearchForm({ onAddMovie }: MovieSearchFormProps) {
                       </h4>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average > 0 && ` • ${movie.vote_average.toFixed(1)}⭐`}
-                        {movie.director && ` • Dir: ${movie.director}`}
+                        {movie.vote_average > 0 && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
                       </p>
+                      {movie.director && (
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          Director: {movie.director}
+                        </p>
+                      )}
+                      {movie.actors && movie.actors.length > 0 && (
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          Cast: {movie.actors.slice(0, 3).join(', ')}
+                        </p>
+                      )}
+                      {movie.genres && movie.genres.length > 0 && (
+                        <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                          {movie.genres.join(', ')}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </button>

@@ -25,7 +25,10 @@ async function fetchMovieDetails(movieId: number) {
     // Get top 5 actors
     const actors = credits.cast?.slice(0, 5).map((actor: any) => actor.name) || []
 
-    return { ...details, director, actors }
+    // Get genres
+    const genres = details.genres?.map((genre: any) => genre.name) || []
+
+    return { ...details, director, actors, genres }
   } catch (error) {
     console.error('Error fetching movie details:', error)
     return null
@@ -88,22 +91,29 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json()
     
-    // Transform results with year for autocomplete
-    const results = data.results.slice(0, 8).map((movie: any) => {
-      const year = movie.release_date ? new Date(movie.release_date).getFullYear() : null
-      
-      return {
-        id: movie.id,
-        title: movie.title,
-        year,
-        release_date: movie.release_date,
-        poster_path: movie.poster_path,
-        vote_average: movie.vote_average,
-        overview: movie.overview
-      }
-    })
+    // Transform results and fetch details for top results
+    const topResults = data.results.slice(0, 5)
+    const resultsWithDetails = await Promise.all(
+      topResults.map(async (movie: any) => {
+        const details = await fetchMovieDetails(movie.id)
+        const year = movie.release_date ? new Date(movie.release_date).getFullYear() : null
+        
+        return {
+          id: movie.id,
+          title: movie.title,
+          year,
+          release_date: movie.release_date,
+          poster_path: movie.poster_path,
+          vote_average: movie.vote_average,
+          overview: movie.overview,
+          director: details?.director,
+          actors: details?.actors,
+          genres: details?.genres
+        }
+      })
+    )
 
-    return NextResponse.json({ results })
+    return NextResponse.json({ results: resultsWithDetails })
   } catch (error) {
     console.error('Error searching movies:', error)
     return NextResponse.json({ error: 'Failed to search movies' }, { status: 500 })
