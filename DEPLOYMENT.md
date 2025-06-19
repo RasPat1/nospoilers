@@ -1,111 +1,128 @@
-# Deployment Guide for NoSpoilers
+# NoSpoilers Auto-Deploy Setup Guide
 
-This guide walks you through deploying NoSpoilers to production using Vercel.
+This guide explains how to set up automatic deployments from GitHub to production.
 
-## Prerequisites
+## Vercel Auto-Deploy Setup
 
-1. GitHub repository (✓ Already set up at https://github.com/RasPat1/nospoilers)
-2. Supabase project with database schema applied
-3. Vercel account (free tier works)
+### 1. Connect to Vercel
 
-## Deployment Steps
+1. Go to [vercel.com](https://vercel.com) and sign in with your GitHub account
+2. Click "Add New..." → "Project"
+3. Import your `nospoilers` repository from GitHub
+4. Vercel will automatically detect it's a Next.js app
 
-### 1. Push Code to GitHub
+### 2. Configure Environment Variables
 
-First, ensure your code is up to date on GitHub:
+In Vercel project settings → Environment Variables, add:
 
-```bash
-git add .
-git commit -m "Prepare for deployment"
-git push origin main
+```env
+# Supabase (Production)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+
+# WebSocket Server (Production)
+NEXT_PUBLIC_WEBSOCKET_URL=wss://your-websocket-server.com
+
+# Admin Credentials
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_secure_password
+
+# TMDB API
+TMDB_API_KEY=your_tmdb_key
+TMDB_API_READ_ACCESS_TOKEN=your_tmdb_token
+
+# Database Type (Production)
+DATABASE_TYPE=supabase
 ```
 
-### 2. Deploy to Vercel
+### 3. Deploy Settings
 
-#### Option A: Using Vercel CLI
+Vercel will automatically:
+- Deploy every push to `main` branch to production
+- Create preview deployments for pull requests
+- Run build checks before deploying
 
-```bash
-# Install Vercel CLI globally
-npm i -g vercel
+### 4. WebSocket Server Deployment
 
-# Deploy
-vercel
+The WebSocket server needs separate deployment. Options:
 
-# Follow the prompts:
-# - Link to existing project or create new
-# - Select the nospoilers directory
-# - Use default build settings
+#### Option A: Railway
+1. Create account at [railway.app](https://railway.app)
+2. Create new project from GitHub
+3. Select the `nospoilers` repo
+4. Add a new service pointing to `websocket-server.js`
+5. Set environment variables:
+   - `PORT=3001`
+   - `NODE_ENV=production`
+6. Railway will provide a URL like `wss://your-app.railway.app`
+
+#### Option B: Render
+1. Create account at [render.com](https://render.com)
+2. New → Web Service
+3. Connect GitHub and select `nospoilers`
+4. Settings:
+   - Build Command: `npm install`
+   - Start Command: `node websocket-server.js`
+5. Add environment variables
+
+#### Option C: Fly.io
+1. Install Fly CLI: `brew install flyctl`
+2. Create `fly.toml` in project root
+3. Deploy with `fly deploy`
+
+### 5. Database Setup (Supabase)
+
+1. Create project at [supabase.com](https://supabase.com)
+2. Run the schema from `schema/complete-schema.sql` in SQL Editor
+3. Copy the URL and anon key to Vercel environment variables
+
+## GitHub Actions Alternative
+
+If you prefer GitHub Actions for deployment:
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
 ```
 
-#### Option B: Using Vercel Dashboard
+## Post-Deploy Checklist
 
-1. Go to https://vercel.com/new
-2. Import your GitHub repository: `RasPat1/nospoilers`
-3. Configure project:
-   - Framework Preset: Next.js
-   - Root Directory: ./
-   - Build Command: `npm run build` (default)
-   - Output Directory: `.next` (default)
-
-### 3. Set Environment Variables
-
-In Vercel Dashboard:
-1. Go to your project settings
-2. Navigate to "Environment Variables"
-3. Add these variables:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-ADMIN_SECRET=your_secure_admin_password
-```
-
-### 4. Deploy
-
-- If using CLI: Run `vercel --prod`
-- If using Dashboard: Click "Deploy"
-
-## Post-Deployment
-
-### Custom Domain (Optional)
-
-1. In Vercel Dashboard → Settings → Domains
-2. Add your custom domain
-3. Follow DNS configuration instructions
-
-### Environment-Specific Configuration
-
-- **Production**: Uses Supabase cloud database
-- **Development**: Can use local PostgreSQL or Supabase
-- **Preview**: Each PR gets its own preview deployment
+1. ✅ Main app deployed to Vercel
+2. ✅ WebSocket server deployed separately
+3. ✅ Environment variables configured
+4. ✅ Supabase database initialized with schema
+5. ✅ Custom domain configured (optional)
+6. ✅ SSL certificates active
+7. ✅ Test voting flow in production
 
 ## Monitoring
 
-- View logs: Vercel Dashboard → Functions → Logs
-- Check build status: Vercel Dashboard → Deployments
-- Monitor performance: Vercel Analytics (optional add-on)
-
-## Updating Production
-
-```bash
-# Make changes
-git add .
-git commit -m "Your changes"
-git push origin main
-
-# Vercel automatically deploys on push to main
-```
+- Vercel Dashboard: Monitor deployments and function logs
+- Supabase Dashboard: Monitor database usage and logs
+- WebSocket logs: Check your WebSocket hosting provider
 
 ## Rollback
 
-If needed, you can instantly rollback to a previous deployment:
-1. Vercel Dashboard → Deployments
-2. Find the previous working deployment
-3. Click "..." → "Promote to Production"
-
-## Security Notes
-
-- Never commit `.env.local` or `.env` files
-- Use strong, unique passwords for `ADMIN_SECRET` in production
-- Rotate credentials periodically
-- Enable 2FA on GitHub and Vercel accounts
+If issues occur:
+- Vercel: Use "Instant Rollback" in dashboard
+- Database: Supabase has point-in-time recovery
+- Git: `git revert` and push to trigger new deploy
