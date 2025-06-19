@@ -2,6 +2,14 @@
 
 ## 🐛 Bugs to Fix
 
+### 0 . Not Correctly implementing Ranked Choice Voting
+- **Problem**: The algorithm to calculate ranked choice is not correct
+- **Details**: The number of points a movie gest is based on it's position in a list made by the user. But the position in the list is being used as the actual number of points. This is not correcta s users lists can have varying sizes which mean that movies left off the list get 0 points and movies get points based on the lenght of the list. If there are 3 items the then to pmovie gets 3 points. So adding more movies to your list can effectively boost the number of points a movie receives. THis is not supposed to happen. Go find out how to implement ranked choice voting programatically when not all candidates must be ranked and updat ethe ranking algorihtm.
+- **Priority**: Urgent
+- **Files to check**:
+  - `results.test.ts`
+  - `/app/api/votes/results/route.ts`
+
 ### 1. Vote Count Display Issue
 - **Problem**: Results page shows "Total Votes: 3" when only one person has voted
 - **Details**: The vote count appears to be aggregating across all environments or counting incorrectly
@@ -90,6 +98,7 @@
 ## 🚀 Next Steps
 
 When starting work on these items:
+0. Fix broken rank choice bug (item 0)
 1. Fix critical bugs first (items 1-3)
 2. Implement deduplication (item 6)
 3. Add real-time updates (item 4)

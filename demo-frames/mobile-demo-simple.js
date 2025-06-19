@@ -17,14 +17,15 @@ async function runMobileDemo() {
   let browser;
 
   try {
+    const isHeadless = process.env.HEADLESS === 'true';
     browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 50,
+      headless: isHeadless,
+      slowMo: isHeadless ? 0 : 50,
       defaultViewport: { width: 390, height: 844 },
-      args: ['--window-size=400,900']
+      args: ['--window-size=400,900', '--no-sandbox', '--disable-setuid-sandbox']
     });
 
-    console.log('✅ Browser launched');
+    console.log(`✅ Browser launched (${isHeadless ? 'headless' : 'visible'} mode)`);
 
     async function captureScene(page, name, annotation, duration = 3000) {
       if (annotation) {
@@ -85,13 +86,15 @@ async function runMobileDemo() {
     });
     await sleep(2000);
     
-    // Override confirm dialog and reset
+    // Override confirm dialog for reset
     await adminPage.evaluate(() => {
       window.confirm = () => true;
     });
+    
+    // Click the full reset button (delete everything)
     await adminPage.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll('button'));
-      const reset = buttons.find(b => b.textContent.includes('Reset Everything'));
+      const reset = buttons.find(b => b.textContent.includes('Delete Everything'));
       if (reset) reset.click();
     });
     await sleep(2000);

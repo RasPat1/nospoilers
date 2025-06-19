@@ -210,8 +210,8 @@ class MovieNightDemoRecorder {
     await this.clickButtonByText(admin, 'Login');
     await this.delay(2000);
     
-    // Click reset button
-    await this.clickButtonByText(admin, 'Reset Everything');
+    // Click reset votes only button (to keep movies)
+    await this.clickButtonByText(admin, 'Reset Votes & Start New Round');
     await this.delay(500);
     
     // Confirm reset
@@ -220,7 +220,7 @@ class MovieNightDemoRecorder {
       window.confirm = () => true;
     });
     
-    await this.clickButtonByText(admin, 'Reset Everything');
+    await this.clickButtonByText(admin, 'Reset Votes & Start New Round');
     await this.delay(2000);
     
     // Close admin context

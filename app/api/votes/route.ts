@@ -58,43 +58,66 @@ export async function POST(request: NextRequest) {
     }
 
   // Create user session if it doesn't exist
-  const { data: userSession } = await supabase
+  const { data: userSessions, error: userSessionError } = await supabase
     .from('user_sessions')
     .select('*')
     .eq('id', sessionId)
-    .single()
+  
+  const userSession = userSessions && userSessions.length > 0 ? userSessions[0] : null
 
   if (!userSession) {
-    await supabase
+    console.log('Creating new user session:', sessionId)
+    const { error: insertError } = await supabase
       .from('user_sessions')
       .insert({ id: sessionId })
+    
+    if (insertError) {
+      console.error('Error creating user session:', insertError)
+    }
   }
 
   // Check if user already voted
-  const { data: existingVote } = await supabase
+  const { data: existingVotes, error: existingVoteError } = await supabase
     .from('votes')
     .select('*')
     .eq('voting_session_id', votingSession.id)
     .eq('user_session_id', sessionId)
-    .single()
+  
+  const existingVote = existingVotes && existingVotes.length > 0 ? existingVotes[0] : null
+
+  console.log('Checking for existing vote:', { 
+    votingSessionId: votingSession.id, 
+    userSessionId: sessionId,
+    existingVote: !!existingVote,
+    existingVoteCount: existingVotes?.length || 0,
+    error: existingVoteError?.message 
+  })
 
   if (existingVote) {
     return NextResponse.json({ error: 'You have already voted' }, { status: 400 })
   }
 
     // Submit vote
-    const { error: voteError } = await supabase
+    const { data: newVote, error: voteError } = await supabase
       .from('votes')
       .insert({
         voting_session_id: votingSession.id,
         user_session_id: sessionId,
         rankings: rankings
       })
+      .select()
 
     if (voteError) {
       console.error('Vote submission error:', voteError)
       return NextResponse.json({ error: voteError.message }, { status: 500 })
     }
+
+    console.log('Vote submitted successfully:', {
+      voteId: newVote?.[0]?.id,
+      votingSessionId: votingSession.id,
+      userSessionId: sessionId,
+      environment: environment
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

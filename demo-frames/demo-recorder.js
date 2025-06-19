@@ -15,8 +15,8 @@ class MovieNightDemoRecorder {
     // Configuration
     this.config = {
       appUrl: config.appUrl || 'http://localhost:3000',
-      headless: config.headless || false,
-      slowMo: config.slowMo || 50, // Slow down actions for visibility
+      headless: config.headless !== undefined ? config.headless : true, // Default to headless
+      slowMo: config.slowMo || 0, // No slow motion in headless
       screenshotDir: config.screenshotDir || '.',
       outputVideo: config.outputVideo || 'movie_night_demo.mp4',
       viewport: config.viewport || { width: 1920, height: 1080 }
@@ -46,7 +46,7 @@ class MovieNightDemoRecorder {
       ]
     });
 
-    console.log('✅ Browser launched successfully');
+    console.log(`✅ Browser launched successfully (${this.config.headless ? 'headless' : 'visible'} mode)`);
   }
 
   async createUser(username, options = {}) {

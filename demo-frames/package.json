@@ -5,7 +5,10 @@
   "main": "demo-recorder.js",
   "scripts": {
     "demo": "node demo-recorder.js",
-    "demo:headless": "HEADLESS=true node demo-recorder.js",
+    "demo:headless": "node run-headless-demo.js",
+    "demo:mobile": "node mobile-demo-simple.js",
+    "demo:mobile:headless": "HEADLESS=true node mobile-demo-simple.js",
+    "demo:all": "./run-all-demos-headless.sh",
     "demo:fast": "HEADLESS=true SLOW_MO=0 node demo-recorder.js"
   },
   "dependencies": {

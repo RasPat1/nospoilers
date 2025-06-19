@@ -23,9 +23,18 @@ This directory contains the automated demo recorder for the NoSpoilers voting ap
 
 ## Available Scripts
 
-- `npm run demo` - Run demo with visible browser
-- `npm run demo:headless` - Run demo in headless mode (faster)
-- `npm run demo:fast` - Run demo in headless mode with no delays
+### Running Demos in Background (Headless)
+- `npm run demo:headless` - Desktop demo in background
+- `npm run demo:mobile:headless` - Mobile demo in background  
+- `npm run demo:all` - Run both demos in background simultaneously
+
+### Running Demos with Visible Browser
+- `npm run demo` - Desktop demo with visible browser
+- `npm run demo:mobile` - Mobile demo with visible browser
+
+### Advanced Options
+- `HEADLESS=true node demo-recorder.js` - Force headless mode
+- `SLOW_MO=0 node demo-recorder.js` - Run at full speed
 
 ## Requirements
 

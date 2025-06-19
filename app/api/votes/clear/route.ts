@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+// Use service role client to bypass RLS for deletion
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -14,7 +20,7 @@ export async function DELETE(request: NextRequest) {
     // Get current open voting session for this environment
     const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
     
-    const { data: votingSessions, error: sessionError } = await supabase
+    const { data: votingSessions, error: sessionError } = await supabaseAdminAdmin
       .from('voting_sessions')
       .select('*')
       .eq('status', 'open')
@@ -32,8 +38,30 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'No active voting session' }, { status: 404 })
     }
 
+    // First, check if vote exists
+    const { data: existingVotes, error: checkError } = await supabaseAdmin
+      .from('votes')
+      .select('*')
+      .eq('voting_session_id', votingSession.id)
+      .eq('user_session_id', sessionId)
+    
+    if (checkError) {
+      console.error('Error checking existing votes:', checkError)
+      return NextResponse.json({ error: 'Failed to check existing votes' }, { status: 500 })
+    }
+    
+    console.log('Existing votes before delete:', existingVotes)
+    
+    if (!existingVotes || existingVotes.length === 0) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'No vote to clear', 
+        deletedCount: 0 
+      })
+    }
+
     // Delete the user's vote
-    const { data: deletedVotes, error: deleteError } = await supabase
+    const { data: deletedVotes, error: deleteError } = await supabaseAdmin
       .from('votes')
       .delete()
       .eq('voting_session_id', votingSession.id)
@@ -42,10 +70,27 @@ export async function DELETE(request: NextRequest) {
 
     if (deleteError) {
       console.error('Error deleting vote:', deleteError)
-      return NextResponse.json({ error: 'Failed to clear vote' }, { status: 500 })
+      console.error('Delete error details:', deleteError.message, deleteError.details, deleteError.hint)
+      return NextResponse.json({ 
+        error: 'Failed to clear vote', 
+        details: deleteError.message 
+      }, { status: 500 })
     }
 
     console.log('Deleted votes:', deletedVotes)
+    
+    // Verify deletion
+    const { data: remainingVotes, error: verifyError } = await supabaseAdmin
+      .from('votes')
+      .select('*')
+      .eq('voting_session_id', votingSession.id)
+      .eq('user_session_id', sessionId)
+    
+    if (verifyError) {
+      console.error('Error verifying deletion:', verifyError)
+    } else {
+      console.log('Remaining votes after delete:', remainingVotes)
+    }
     return NextResponse.json({ success: true, message: 'Vote cleared successfully', deletedCount: deletedVotes?.length || 0 })
   } catch (error) {
     console.error('Unexpected error clearing vote:', error)
