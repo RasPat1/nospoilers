@@ -45,9 +45,15 @@ CREATE POLICY "Movies are viewable by everyone" ON movies
 CREATE POLICY "Anyone can add movies" ON movies
   FOR INSERT WITH CHECK (true);
 
--- Create policies for voting_sessions (everyone can read)
+-- Create policies for voting_sessions (everyone can read, insert, and update)
 CREATE POLICY "Voting sessions are viewable by everyone" ON voting_sessions
   FOR SELECT USING (true);
+
+CREATE POLICY "Anyone can create voting sessions" ON voting_sessions
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can update voting sessions" ON voting_sessions
+  FOR UPDATE USING (true);
 
 -- Create policies for user_sessions (users can create their own)
 CREATE POLICY "Users can create sessions" ON user_sessions

@@ -4,9 +4,10 @@
 
 ### Frontend
 - **React** with TypeScript
-- **@dnd-kit** - Drag and drop library (mobile-friendly)
+- **Lucide React** - Icon library for UI elements
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Query** - Data fetching and caching
+- **Mobile-first design** - Button-based interactions for better mobile UX
 
 ### Backend
 - **Vercel** - Hosting and serverless functions
