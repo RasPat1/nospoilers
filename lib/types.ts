@@ -7,12 +7,14 @@ export interface Movie {
   backdrop_path?: string
   release_date?: string
   vote_average?: number
+  overview?: string
   rotten_tomatoes_url?: string
   rotten_tomatoes_score?: number
   tmdb_id?: number
   director?: string
   actors?: string[]
   plot?: string
+  genres?: string[]
 }
 
 export interface VotingSession {
