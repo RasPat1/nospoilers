@@ -20,7 +20,7 @@ export async function DELETE(request: NextRequest) {
     // Get current open voting session for this environment
     const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
     
-    const { data: votingSessions, error: sessionError } = await supabaseAdminAdmin
+    const { data: votingSessions, error: sessionError } = await supabaseAdmin
       .from('voting_sessions')
       .select('*')
       .eq('status', 'open')

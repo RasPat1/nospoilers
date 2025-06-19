@@ -246,7 +246,7 @@ export default function ResultsPage() {
                                   ? 'text-danger-600 dark:text-danger-400'
                                   : 'text-neutral-600 dark:text-neutral-400'
                               }`}>
-                                {votes} votes ({percentage}%)
+                                {votes as number} votes ({percentage}%)
                               </span>
                             </div>
                           )
@@ -260,7 +260,7 @@ export default function ResultsPage() {
                           </p>
                           {round.tiedCandidates && round.tiedCandidates.length > 1 && (
                             <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-                              ⚠️ Tie between: {round.tiedCandidates.map(id => 
+                              ⚠️ Tie between: {round.tiedCandidates.map((id: string) => 
                                 movies.find(m => m.id === id)?.title || 'Unknown'
                               ).join(', ')}
                             </p>

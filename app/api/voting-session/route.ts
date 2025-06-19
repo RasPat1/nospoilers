@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       console.error('Error checking for existing vote:', voteError)
     }
     
-    hasVoted = votes && votes.length > 0
+    hasVoted = (votes && votes.length > 0) || false
     console.log('Vote check:', { sessionId, votingSessionId: session.id, hasVoted, voteCount: votes?.length || 0 })
   }
 
