@@ -169,7 +169,7 @@ export default function ResultsPage() {
                     </h3>
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                       {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                      {movie.vote_average && ` • ${movie.vote_average.toFixed(1)}⭐`}
+                      {movie.vote_average && ` • ${parseFloat(movie.vote_average).toFixed(1)}⭐`}
                     </p>
                     <p className="text-sm font-medium text-primary-600 dark:text-primary-400 mt-1">
                       {movie.votes} points

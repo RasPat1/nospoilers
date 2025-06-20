@@ -124,7 +124,7 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       <h3 className="font-semibold text-lg text-neutral-900 dark:text-neutral-100">{movie.title}</h3>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.vote_average && ` • TMDB: ${parseFloat(movie.vote_average).toFixed(1)}⭐`}
                         {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
                       {showOverview[movie.id] && (
@@ -242,7 +242,7 @@ export default function VotingInterface({ movies, onSubmit, newMovieTitle, setNe
                       <h3 className="font-semibold text-lg text-neutral-900 dark:text-neutral-100">{movie.title}</h3>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.vote_average && ` • TMDB: ${parseFloat(movie.vote_average).toFixed(1)}⭐`}
                         {movie.rotten_tomatoes_score && ` • RT: ${movie.rotten_tomatoes_score}%`}
                       </p>
                       {showOverview[movie.id] && (

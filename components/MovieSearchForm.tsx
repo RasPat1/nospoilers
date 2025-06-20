@@ -147,7 +147,7 @@ export default function MovieSearchForm({ onAddMovie }: MovieSearchFormProps) {
                       </h4>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        {movie.vote_average > 0 && ` • TMDB: ${movie.vote_average.toFixed(1)}⭐`}
+                        {movie.vote_average > 0 && ` • TMDB: ${parseFloat(movie.vote_average).toFixed(1)}⭐`}
                       </p>
                       {movie.director && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">

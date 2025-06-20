@@ -170,7 +170,7 @@ export default function MovieSearch({ onSelectMovie, placeholder = "Search for a
                 </p>
                 {movie.vote_average > 0 && (
                   <div className="text-xs text-primary-600 dark:text-primary-400 mt-1">
-                    TMDB: {movie.vote_average.toFixed(1)}/10
+                    TMDB: {parseFloat(movie.vote_average).toFixed(1)}/10
                   </div>
                 )}
               </div>
