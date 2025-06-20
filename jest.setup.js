@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom'
+// Skip WebSocket server in test environment to avoid issues
+// Tests can mock WebSocket connections as needed
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

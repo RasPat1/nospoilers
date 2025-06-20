@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Movie, VotingSession } from '@/lib/types'
 import Image from 'next/image'
 import { Trophy, Users, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
+import { safeToFixed } from '@/lib/utils/safe-number'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,6 +39,37 @@ export default function ResultsPage() {
     }
   }
 
+  const handleClearVoteAndReturn = async () => {
+    try {
+      // Get session ID from cookie
+      const sessionId = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('nospoilers-session='))
+        ?.split('=')[1]
+      
+      if (sessionId) {
+        const response = await fetch('/api/votes/clear', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId })
+        })
+        
+        if (!response.ok) {
+          console.error('Failed to clear vote')
+        }
+      }
+      
+      // Redirect to voting page
+      router.push('/vote')
+    } catch (error) {
+      console.error('Error clearing vote:', error)
+      // Still redirect even if clear fails
+      router.push('/vote')
+    }
+  }
+
   useEffect(() => {
     loadResults()
     
@@ -58,14 +90,23 @@ export default function ResultsPage() {
   const winner = voteDetails?.winner ? movies.find(m => m.id === voteDetails.winner) : null
   const isVotingClosed = votingSession?.status === 'closed'
 
-  // Calculate rankings based on votes
+  // Calculate rankings based on IRV results
   const movieRankings = movies
     .map(movie => {
-      const votes = voteDetails?.rankings?.[movie.id] || 0
-      return { ...movie, votes }
+      const ranking = voteDetails?.rankings?.[movie.id] || 999 // 999 = not ranked
+      const firstChoiceVotes = voteDetails?.firstChoiceVotes?.[movie.id] || 0
+      
+      // Find which round this movie was eliminated in (if any)
+      let eliminatedInRound: number | null = null
+      if (voteDetails?.eliminationRounds) {
+        const round = voteDetails.eliminationRounds.find((r: any) => r.eliminated === movie.id)
+        if (round) eliminatedInRound = round.round
+      }
+      
+      return { ...movie, ranking, firstChoiceVotes, eliminatedInRound }
     })
-    .sort((a, b) => b.votes - a.votes)
-    .filter(movie => movie.votes > 0) // Only show movies that received votes
+    .filter(movie => movie.ranking !== 999) // Only show movies that received votes
+    .sort((a, b) => a.ranking - b.ranking) // Sort by ranking (1 = first place)
 
   return (
     <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
@@ -75,11 +116,11 @@ export default function ResultsPage() {
             {isVotingClosed ? 'Final Results' : 'Live Results'}
           </h1>
           <button
-            onClick={() => router.push('/')}
+            onClick={handleClearVoteAndReturn}
             className="flex items-center gap-2 px-4 py-2 bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Voting
+            Clear Vote and Vote Again
           </button>
         </div>
 
@@ -126,9 +167,12 @@ export default function ResultsPage() {
 
         {/* Rankings List */}
         <div>
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             {isVotingClosed ? 'Final Rankings' : 'Current Rankings'}
           </h2>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+            Using Instant-Runoff Voting (IRV) - winner needs majority support
+          </p>
           {movieRankings.length === 0 ? (
             <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg p-8 text-center">
               <p className="text-neutral-600 dark:text-neutral-400">
@@ -169,11 +213,17 @@ export default function ResultsPage() {
                     </h3>
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                       {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                      {movie.vote_average && ` • ${parseFloat(movie.vote_average).toFixed(1)}⭐`}
+                      {movie.vote_average && ` • ${safeToFixed(movie.vote_average)}⭐`}
                     </p>
                     <p className="text-sm font-medium text-primary-600 dark:text-primary-400 mt-1">
-                      {movie.votes} points
+                      {movie.firstChoiceVotes} first-choice vote{movie.firstChoiceVotes !== 1 ? 's' : ''}
+                      {voteDetails?.totalVotes > 0 && ` (${((movie.firstChoiceVotes / voteDetails.totalVotes) * 100).toFixed(0)}%)`}
                     </p>
+                    {movie.eliminatedInRound && (
+                      <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+                        Eliminated in round {movie.eliminatedInRound}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

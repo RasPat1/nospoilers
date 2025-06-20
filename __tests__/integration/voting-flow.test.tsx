@@ -18,6 +18,11 @@ jest.mock('@/lib/session', () => ({
   getOrCreateSessionId: () => 'test-session-id'
 }))
 
+// Mock WebSocket hook
+jest.mock('@/hooks/useWebSocket', () => ({
+  useWebSocket: () => jest.fn()
+}))
+
 describe('Full Voting Flow', () => {
   beforeEach(() => {
     jest.clearAllMocks()

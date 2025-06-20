@@ -216,15 +216,18 @@ export async function GET() {
       }
     })
     
-    // For display purposes, convert rankings to points (inverse of rank)
-    // This makes the UI show higher numbers for better-ranked movies
-    const moviePoints: Record<string, number> = {}
-    Object.entries(rankings).forEach(([movieId, rank]) => {
-      moviePoints[movieId] = movieIds.size - rank + 1
+    // Calculate first-choice vote counts for display
+    const firstChoiceVotes: Record<string, number> = {}
+    validBallots.forEach(ballot => {
+      const firstChoice = ballot.rankings[0]
+      if (firstChoice) {
+        firstChoiceVotes[firstChoice] = (firstChoiceVotes[firstChoice] || 0) + 1
+      }
     })
 
     return NextResponse.json({
-      rankings: moviePoints,
+      rankings, // Return actual rankings (1 = first place, 2 = second, etc.)
+      firstChoiceVotes, // Initial vote counts
       totalVotes,
       eliminationRounds,
       winner

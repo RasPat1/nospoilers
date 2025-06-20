@@ -36,6 +36,7 @@ Movie night shouldn't start with a 45-minute argument about whether to watch "Th
 - `/api/movies` - GET (list movies), POST (add movie with full details)
 - `/api/movies/search` - Search movies via TMDB with autocomplete
 - `/api/votes` - POST (submit rankings)
+- `/api/votes/clear` - DELETE (clear user's vote to allow re-voting)
 - `/api/votes/results` - GET voting results with point calculations
 - `/api/voting-session` - GET current session info
 - `/api/voting-session/close` - POST close voting and declare winner

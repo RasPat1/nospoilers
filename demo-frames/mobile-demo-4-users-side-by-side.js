@@ -169,7 +169,7 @@ async function run4UserDemo() {
     // Clear existing data
     console.log('📍 Clearing existing data...');
     const adminPage = await browser.newPage();
-    await adminPage.goto('http://localhost:3000/admin?admin=admin123');
+    await adminPage.goto('http://localhost:8080/admin?admin=admin123');
     await sleep(1500);
     try {
       await adminPage.type('input[type="text"]', 'admin');
@@ -205,7 +205,7 @@ async function run4UserDemo() {
     // Scene 1: All users on vote page
     console.log('📍 Scene 1: All users join');
     for (const page of pages) {
-      await page.goto('http://localhost:3000/vote');
+      await page.goto('http://localhost:8080/vote');
     }
     await sleep(2000);
     
@@ -339,7 +339,7 @@ async function run4UserDemo() {
     await sleep(2000);
     
     // Sarah is redirected to results
-    await sarah.goto('http://localhost:3000/results');
+    await sarah.goto('http://localhost:8080/results');
     await sleep(2000);
     
     await captureCompositeScene(pages, 'sarah_at_results', [
@@ -424,9 +424,9 @@ async function run4UserDemo() {
     await sleep(2500);
     
     // Everyone goes to results
-    await mike.goto('http://localhost:3000/results');
-    await emma.goto('http://localhost:3000/results');
-    await alex.goto('http://localhost:3000/results');
+    await mike.goto('http://localhost:8080/results');
+    await emma.goto('http://localhost:8080/results');
+    await alex.goto('http://localhost:8080/results');
     await sleep(2000);
     
     await captureCompositeScene(pages, 'all_at_results', [

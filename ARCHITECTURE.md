@@ -103,6 +103,7 @@ votes (
 - `POST /api/movies` - Add a new movie
 - `GET /api/movies` - Get all movies for current session
 - `POST /api/votes` - Submit ranked vote
+- `DELETE /api/votes/clear` - Clear user's vote to allow re-voting
 - `POST /api/voting-session/close` - Close voting (admin only)
 - `GET /api/results` - Get voting results
 

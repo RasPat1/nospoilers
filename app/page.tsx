@@ -136,6 +136,8 @@ export default function LandingPage() {
                     playsInline
                     muted
                   >
+                    <source src="/videos/comprehensive_4user_demo.mp4" type="video/mp4" />
+                    <source src="/videos/complete_4user_demo.mp4" type="video/mp4" />
                     <source src="/demo.mp4" type="video/mp4" />
                   </video>
                   <button
@@ -150,6 +152,77 @@ export default function LandingPage() {
                   </button>
                 </>
               )}
+            </div>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-4">
+              Watch 4 users collaborate in real-time to choose a movie
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4-User Demo Section */}
+      <section className="px-4 py-20 bg-primary-50 dark:bg-primary-950/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
+              <Users className="w-4 h-4" />
+              Real-time Collaboration
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+              See How 4 Friends Choose a Movie Together
+            </h2>
+            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
+              Watch Alex, Sam, Jordan, and Casey add movies, vote with ranked choices, and see instant results
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden p-8">
+            <div className="aspect-video bg-neutral-900 rounded-lg overflow-hidden">
+              <video
+                className="w-full h-full object-cover"
+                controls
+                playsInline
+                muted
+                poster="/demo-thumbnails/4user-demo.jpg"
+              >
+                <source src="/videos/comprehensive_4user_demo.mp4" type="video/mp4" />
+                <source src="/videos/complete_4user_demo.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            
+            <div className="grid md:grid-cols-4 gap-6 mt-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-red-600 dark:text-red-400">A</span>
+                </div>
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Alex</h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Action movies</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-teal-600 dark:text-teal-400">S</span>
+                </div>
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Sam</h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Rom-coms</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-blue-600 dark:text-blue-400">J</span>
+                </div>
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Jordan</h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Sci-fi</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="font-bold text-green-600 dark:text-green-400">C</span>
+                </div>
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Casey</h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Art films</p>
+              </div>
             </div>
           </div>
         </div>

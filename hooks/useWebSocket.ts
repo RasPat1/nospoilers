@@ -25,7 +25,8 @@ export function useWebSocket(
         wsRef.current.close()
       }
 
-      const wsPort = process.env.NEXT_PUBLIC_WS_PORT || '8081'
+      // Use port 3002 in test environment for consistency
+      const wsPort = process.env.NODE_ENV === 'test' ? '3002' : (process.env.NEXT_PUBLIC_WS_PORT || '8081')
       const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || `ws://localhost:${wsPort}`
       console.log('Attempting WebSocket connection to:', wsUrl)
       const ws = new WebSocket(wsUrl)
