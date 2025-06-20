@@ -25,7 +25,10 @@
       "Bash",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:nospoilers-m77lw13q7-raspat1s-projects.vercel.app)",
-      "WebFetch(domain:nospoilers-ashen.vercel.app)"
+      "WebFetch(domain:nospoilers-ashen.vercel.app)",
+      "WebFetch(domain:nospoilers-ev2d6plwh-raspat1s-projects.vercel.app)",
+      "WebFetch(domain:nospoilers-raspat1s-projects.vercel.app)",
+      "WebFetch(domain:nospoilers-7djtw0tbw-raspat1s-projects.vercel.app)"
     ],
     "deny": []
   }
