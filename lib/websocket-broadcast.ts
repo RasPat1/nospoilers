@@ -1,6 +1,6 @@
 export async function broadcastUpdate(data: any) {
   try {
-    const wsPort = process.env.WS_PORT || '3002';
+    const wsPort = process.env.WS_PORT || '8081';
     const wsUrl = `http://localhost:${wsPort}/broadcast`;
     
     const response = await fetch(wsUrl, {

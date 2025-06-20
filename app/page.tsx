@@ -136,8 +136,7 @@ export default function LandingPage() {
                     playsInline
                     muted
                   >
-                    <source src="/videos/nospoilers_complete_demo.mp4" type="video/mp4" />
-                    <source src="/videos/nospoilers_complete_demo.webm" type="video/webm" />
+                    <source src="/demo.mp4" type="video/mp4" />
                   </video>
                   <button
                     onClick={toggleMainVideo}

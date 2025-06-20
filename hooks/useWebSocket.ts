@@ -25,7 +25,8 @@ export function useWebSocket(
         wsRef.current.close()
       }
 
-      const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001'
+      const wsPort = process.env.NEXT_PUBLIC_WS_PORT || '8081'
+      const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || `ws://localhost:${wsPort}`
       console.log('Attempting WebSocket connection to:', wsUrl)
       const ws = new WebSocket(wsUrl)
       wsRef.current = ws
