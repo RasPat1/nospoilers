@@ -23,7 +23,9 @@
       "Bash(git checkout:*)",
       "Bash(vercel:*)",
       "Bash",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:nospoilers-m77lw13q7-raspat1s-projects.vercel.app)",
+      "WebFetch(domain:nospoilers-ashen.vercel.app)"
     ],
     "deny": []
   }
