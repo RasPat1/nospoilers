@@ -131,7 +131,8 @@ describe('Results Page', () => {
               '1': 15,
               '2': 10
             },
-            totalVotes: 7
+            totalVotes: 7,
+            winner: '1' // Add winner to match component logic
           })
         })
       }
@@ -151,7 +152,12 @@ describe('Results Page', () => {
 
     // Should show winner
     expect(screen.getByText('The winner is:')).toBeInTheDocument()
-    expect(screen.getByText('Inception')).toBeInTheDocument()
+    
+    // Look for the winner title in the winner banner (h2 with success styling)
+    const winnerHeading = screen.getAllByText('Inception').find(el => 
+      el.tagName === 'H2' && el.className.includes('text-4xl')
+    )
+    expect(winnerHeading).toBeInTheDocument()
 
     // Voting should show as closed
     expect(screen.getByText('Voting Closed')).toBeInTheDocument()
@@ -206,9 +212,8 @@ describe('Results Page', () => {
       expect(screen.getByText('0')).toBeInTheDocument()
     })
 
-    // Movies should still be displayed
-    expect(screen.getByText('Movie A')).toBeInTheDocument()
-    expect(screen.getByText('0 points')).toBeInTheDocument()
+    // Should show no votes message
+    expect(screen.getByText('No votes have been cast yet. Be the first to vote!')).toBeInTheDocument()
   })
 
   it('should auto-refresh results', async () => {

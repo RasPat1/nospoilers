@@ -1,6 +1,7 @@
 export async function broadcastUpdate(data: any) {
   try {
-    const wsUrl = process.env.WEBSOCKET_URL || 'http://localhost:3001/broadcast';
+    const wsPort = process.env.WS_PORT || '3002';
+    const wsUrl = `http://localhost:${wsPort}/broadcast`;
     
     const response = await fetch(wsUrl, {
       method: 'POST',

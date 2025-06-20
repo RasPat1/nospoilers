@@ -220,45 +220,38 @@ export const db = {
     
     async upsert(id: string): Promise<UserSession> {
       if (isSupabase) {
-        // First try to get existing session
-        const { data: existingSession, error: fetchError } = await supabase
-          .from('user_sessions')
-          .select('*')
-          .eq('id', id)
-          .single();
-        
-        // If session exists, return it
-        if (existingSession && !fetchError) {
-          return existingSession;
-        }
-        
-        // If doesn't exist, try to create new one
+        // For Supabase, try to insert directly and handle conflicts
+        // This avoids the SELECT permission issue
         const { data, error } = await supabase
           .from('user_sessions')
-          .insert({ 
+          .upsert({ 
             id,
-            created_at: new Date().toISOString() 
+            created_at: new Date().toISOString()
+          }, {
+            onConflict: 'id'
           })
           .select()
           .single();
         
         if (error) {
-          // If we got a unique violation, the session was created by another request
+          console.error('User session upsert error:', error);
+          
+          // If it's a unique constraint violation, try to fetch the existing session
           if (error.code === '23505') {
-            // Try to fetch again
-            const { data: retrySession } = await supabase
+            console.log('Session already exists, attempting to fetch...');
+            const { data: existingSession, error: fetchError } = await supabase
               .from('user_sessions')
               .select('*')
               .eq('id', id)
               .single();
-            if (retrySession) return retrySession;
-          }
-          
-          // If RLS policy error, we'll return a mock session
-          // This is a workaround for when we don't have service role key
-          if (error.message?.includes('row-level security policy')) {
-            console.warn('RLS policy preventing user session creation, using mock session');
-            return { id, created_at: new Date().toISOString() };
+              
+            if (existingSession && !fetchError) {
+              return existingSession;
+            }
+            
+            if (fetchError) {
+              console.error('Failed to fetch existing session:', fetchError);
+            }
           }
           
           throw error;

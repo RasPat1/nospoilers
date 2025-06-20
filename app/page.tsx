@@ -74,7 +74,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full text-primary-700 dark:text-primary-300 text-sm font-medium">
             <Star className="w-4 h-4" />
-            End movie night debates forever
+            Debate after, not before
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">
@@ -82,8 +82,8 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-3xl mx-auto">
-            The fairest way to choose what to watch. Everyone suggests, everyone ranks, 
-            and the best movie wins - no arguments, no spoilers.
+            Everyone suggests, everyone ranks, and the best movie wins. 
+            No spoilers, no debates... until after the movie.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">

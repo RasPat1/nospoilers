@@ -24,6 +24,16 @@ describe('Full Voting Flow', () => {
     
     // Mock initial data fetch
     ;(global.fetch as jest.Mock).mockImplementation((url) => {
+      if (url.includes('/api/movies/search')) {
+        // Mock search to return no results for manual add to work
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({
+            results: []
+          })
+        })
+      }
+      
       if (url.includes('/api/movies')) {
         return Promise.resolve({
           ok: true,
@@ -70,10 +80,15 @@ describe('Full Voting Flow', () => {
     })
 
     // 1. Add a new movie manually (without TMDB)
-    const input = screen.getByPlaceholderText('Add a movie title...')
+    const input = screen.getByPlaceholderText('Search for a movie...')
     await user.type(input, 'My Custom Movie')
     
-    const addButton = screen.getByText('Add Movie')
+    // Wait for the search to trigger and show no results, then the manual add button
+    await waitFor(() => {
+      expect(screen.getByText('Add "My Custom Movie" anyway')).toBeInTheDocument()
+    })
+    
+    const addButton = screen.getByText('Add "My Custom Movie" anyway')
     
     // Mock the add movie response
     ;(global.fetch as jest.Mock).mockImplementationOnce(() =>
@@ -98,9 +113,12 @@ describe('Full Voting Flow', () => {
     })
 
     // 2. Add movies to ranking
-    const addToRankingButtons = screen.getAllByText('Add to Ranking')
-    await user.click(addToRankingButtons[0]) // Add first movie
-    await user.click(addToRankingButtons[0]) // Add second movie (index changes)
+    let addButtons = screen.getAllByRole('button', { name: /add to ranking/i })
+    await user.click(addButtons[0]) // Add first movie (Existing Movie)
+    
+    // Get updated buttons after first click
+    addButtons = screen.getAllByRole('button', { name: /add to ranking/i })
+    await user.click(addButtons[0]) // Add second movie (My Custom Movie)
 
     // 3. Verify ranking shows both movies
     expect(screen.getByText('Your Ranking (2)')).toBeInTheDocument()
@@ -134,10 +152,16 @@ describe('Full Voting Flow', () => {
     })
 
     // Add multiple movies manually
-    const input = screen.getByPlaceholderText('Add a movie title...')
+    const input = screen.getByPlaceholderText('Search for a movie...')
     
     // Add first movie
     await user.type(input, 'Obscure Film 1')
+    
+    // Wait for search to show no results
+    await waitFor(() => {
+      expect(screen.getByText('Add "Obscure Film 1" anyway')).toBeInTheDocument()
+    })
+    
     ;(global.fetch as jest.Mock).mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
@@ -151,7 +175,7 @@ describe('Full Voting Flow', () => {
         })
       })
     )
-    await user.click(screen.getByText('Add Movie'))
+    await user.click(screen.getByText('Add "Obscure Film 1" anyway'))
     
     await waitFor(() => {
       expect(screen.getByText('Obscure Film 1')).toBeInTheDocument()
@@ -160,6 +184,12 @@ describe('Full Voting Flow', () => {
     // Clear input and add second movie
     await user.clear(input)
     await user.type(input, 'Obscure Film 2')
+    
+    // Wait for search to show no results for second movie
+    await waitFor(() => {
+      expect(screen.getByText('Add "Obscure Film 2" anyway')).toBeInTheDocument()
+    })
+    
     ;(global.fetch as jest.Mock).mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
@@ -173,7 +203,7 @@ describe('Full Voting Flow', () => {
         })
       })
     )
-    await user.click(screen.getByText('Add Movie'))
+    await user.click(screen.getByText('Add "Obscure Film 2" anyway'))
 
     await waitFor(() => {
       expect(screen.getByText('Obscure Film 2')).toBeInTheDocument()

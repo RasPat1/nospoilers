@@ -106,7 +106,7 @@ describe('VotingInterface', () => {
       />
     )
 
-    // Click "Add to Ranking" for The Matrix
+    // Click add button for The Matrix
     const addButtons = screen.getAllByText('Add to Ranking')
     await user.click(addButtons[0])
 
@@ -131,16 +131,19 @@ describe('VotingInterface', () => {
     )
 
     // Add two movies to ranking
-    const addButtons = screen.getAllByText('Add to Ranking')
+    let addButtons = screen.getAllByText('Add to Ranking')
     await user.click(addButtons[0]) // The Matrix
-    await user.click(addButtons[0]) // Inception (now at index 0)
+    
+    // Get updated buttons after first click
+    addButtons = screen.getAllByText('Add to Ranking')
+    await user.click(addButtons[0]) // Inception
 
     // Check initial order
     const rankedMovies = screen.getAllByText(/^(1|2)$/)
     expect(rankedMovies[0]).toHaveTextContent('1')
     expect(rankedMovies[1]).toHaveTextContent('2')
 
-    // Click "Down" on first movie
+    // Click down arrow on first movie
     const downButtons = screen.getAllByText('Down')
     await user.click(downButtons[0])
 
@@ -165,9 +168,12 @@ describe('VotingInterface', () => {
     )
 
     // Add movies to ranking
-    const addButtons = screen.getAllByText('Add to Ranking')
-    await user.click(addButtons[0])
-    await user.click(addButtons[0])
+    let addButtons = screen.getAllByText('Add to Ranking')
+    await user.click(addButtons[0]) // Add first movie
+    
+    // Get updated buttons after first click
+    addButtons = screen.getAllByText('Add to Ranking')
+    await user.click(addButtons[0]) // Add second movie
 
     // Submit rankings
     const submitButton = screen.getByText('Submit Rankings')

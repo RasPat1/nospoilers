@@ -79,9 +79,11 @@ describe('/api/votes/results', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.results).toBeDefined()
-    expect(data.results).toHaveLength(3)
-    expect(data.results[0].points).toBeGreaterThan(data.results[2].points)
+    expect(data.rankings).toBeDefined()
+    expect(data.totalVotes).toBe(3)
+    expect(data.winner).toBeDefined()
+    // Movie A should have more points than Movie C
+    expect(data.rankings['movie-a']).toBeGreaterThan(data.rankings['movie-c'])
   })
 
   it('should return empty results when no voting session exists', async () => {
@@ -91,8 +93,8 @@ describe('/api/votes/results', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.results).toEqual([])
-    expect(data.votes).toEqual([])
+    expect(data.rankings).toEqual({})
+    expect(data.totalVotes).toBe(0)
   })
 
   it('should handle empty votes', async () => {
@@ -108,7 +110,8 @@ describe('/api/votes/results', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.results).toEqual([])
-    expect(data.votes).toEqual([])
+    expect(data.totalVotes).toBe(0)
+    expect(data.rankings).toEqual({})
+    expect(data.winner).toBeNull()
   })
 })

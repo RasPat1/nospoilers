@@ -29,6 +29,7 @@ jest.mock('@/lib/database', () => {
     getAll: jest.fn(),
     getByStatus: jest.fn(),
     findByTitle: jest.fn(),
+    getByTmdbId: jest.fn(),
     create: jest.fn()
   }
 
@@ -99,14 +100,16 @@ describe('/api/movies', () => {
     })
 
     it('should reject duplicate movies', async () => {
-      __mockMovies.findByTitle.mockResolvedValue({
+      __mockMovies.getByTmdbId.mockResolvedValue({
         id: 'existing-movie',
-        title: 'Existing Movie'
+        title: 'Existing Movie',
+        tmdb_id: 123
       })
 
       const request = {
         json: async () => ({
           title: 'Existing Movie',
+          tmdb_id: 123,
           sessionId: 'test-session'
         })
       }
@@ -115,7 +118,7 @@ describe('/api/movies', () => {
       const data = await response.json()
 
       expect(response.status).toBe(409)
-      expect(data.error).toBe('Movie already exists')
+      expect(data.error).toBe('This movie has already been added')
     })
 
     it('should reject missing title', async () => {

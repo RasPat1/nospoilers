@@ -31,22 +31,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
-  // Create user session if it doesn't exist
-  const userSession = await db.userSessions.get(sessionId)
-
-  if (!userSession) {
-    console.log('Creating new user session:', sessionId)
-    try {
-      const createdSession = await db.userSessions.upsert(sessionId)
-      console.log('User session created:', createdSession)
-    } catch (error: any) {
-      console.error('Error creating user session:', error)
-      return NextResponse.json({ 
-        error: `Failed to create user session: ${error.message || error}` 
-      }, { status: 500 })
+  // Try to create user session if it doesn't exist (optional for Supabase due to RLS)
+  try {
+    const userSession = await db.userSessions.get(sessionId)
+    
+    if (!userSession) {
+      console.log('Creating new user session:', sessionId)
+      try {
+        const createdSession = await db.userSessions.upsert(sessionId)
+        console.log('User session created:', createdSession)
+      } catch (sessionError: any) {
+        console.warn('Could not create user session (RLS policy), continuing with vote creation:', sessionError.message)
+        // Continue anyway - we'll let the vote creation handle the foreign key constraint
+      }
+    } else {
+      console.log('User session already exists:', userSession)
     }
-  } else {
-    console.log('User session already exists:', userSession)
+  } catch (sessionCheckError: any) {
+    console.warn('Could not check user session (RLS policy), continuing with vote creation:', sessionCheckError.message)
+    // Continue anyway
   }
 
   // Check if user already voted
@@ -73,6 +76,14 @@ export async function POST(request: NextRequest) {
       })
     } catch (voteError: any) {
       console.error('Vote submission error:', voteError)
+      
+      // If it's a foreign key constraint error due to missing user session
+      if (voteError.code === '23503' && voteError.message?.includes('user_session_id_fkey')) {
+        return NextResponse.json({ 
+          error: 'Unable to submit vote due to database configuration. Please contact support.' 
+        }, { status: 500 })
+      }
+      
       return NextResponse.json({ error: voteError.message || 'Failed to submit vote' }, { status: 500 })
     }
 
@@ -81,8 +92,9 @@ export async function POST(request: NextRequest) {
       // Get current vote count
       const voteCount = await db.votes.count(votingSession.id)
 
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001'
-      const response = await fetch(`${wsUrl.replace('ws://', 'http://').replace('wss://', 'https://')}/broadcast`, {
+      const wsPort = process.env.WS_PORT || '3002'
+      const wsUrl = `http://localhost:${wsPort}/broadcast`
+      const response = await fetch(wsUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
