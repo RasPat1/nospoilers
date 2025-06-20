@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/database'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -9,34 +9,22 @@ export async function GET(request: NextRequest) {
   console.log('Getting voting session for environment:', environment)
 
   // Get current voting session for this environment
-  const { data: sessions, error: sessionError } = await supabase
-    .from('voting_sessions')
-    .select('*')
-    .eq('environment', environment)
-    .order('created_at', { ascending: false })
-    .limit(1)
-  
-  const session = sessions && sessions.length > 0 ? sessions[0] : null
-  
-  if (sessionError) {
-    console.error('Error fetching voting session:', sessionError)
+  let session = null
+  try {
+    session = await db.votingSession.getCurrent(environment)
+  } catch (error) {
+    console.error('Error fetching voting session:', error)
   }
 
   let hasVoted = false
   
   if (session && sessionId) {
-    const { data: votes, error: voteError } = await supabase
-      .from('votes')
-      .select('*')
-      .eq('voting_session_id', session.id)
-      .eq('user_session_id', sessionId)
-    
-    if (voteError) {
-      console.error('Error checking for existing vote:', voteError)
+    try {
+      hasVoted = await db.votes.hasVoted(session.id, sessionId)
+      console.log('Vote check:', { sessionId, votingSessionId: session.id, hasVoted })
+    } catch (error) {
+      console.error('Error checking for existing vote:', error)
     }
-    
-    hasVoted = (votes && votes.length > 0) || false
-    console.log('Vote check:', { sessionId, votingSessionId: session.id, hasVoted, voteCount: votes?.length || 0 })
   }
 
   return NextResponse.json({ session, hasVoted })

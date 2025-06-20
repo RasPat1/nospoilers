@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/database'
 import { broadcastUpdate } from '@/lib/websocket-broadcast'
 
 export async function DELETE(
@@ -10,14 +10,9 @@ export async function DELETE(
     const movieId = params.id
 
     // Check if movie exists and is still a candidate
-    const { data: movie, error: fetchError } = await supabase
-      .from('movies')
-      .select('*')
-      .eq('id', movieId)
-      .eq('status', 'candidate')
-      .single()
+    const movie = await db.movies.getById(movieId)
 
-    if (fetchError || !movie) {
+    if (!movie || movie.status !== 'candidate') {
       return NextResponse.json(
         { error: 'Movie not found or already in use' },
         { status: 404 }
@@ -25,18 +20,7 @@ export async function DELETE(
     }
 
     // Delete the movie
-    const { error: deleteError } = await supabase
-      .from('movies')
-      .delete()
-      .eq('id', movieId)
-
-    if (deleteError) {
-      console.error('Error deleting movie:', deleteError)
-      return NextResponse.json(
-        { error: 'Failed to delete movie' },
-        { status: 500 }
-      )
-    }
+    await db.movies.delete(movieId)
 
     // Broadcast the movie deletion to all connected clients
     broadcastUpdate({

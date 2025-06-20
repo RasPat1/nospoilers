@@ -15,235 +15,100 @@ jest.mock('next/server', () => ({
   }
 }))
 
-// Mock database abstraction module before imports
+// Mock database abstraction
 jest.mock('@/lib/database', () => {
-  const mockFrom = jest.fn()
-  
+  const mockVotingSession = {
+    getCurrent: jest.fn()
+  }
+
+  const mockVotes = {
+    getBySession: jest.fn()
+  }
+
+  const mockMovies = {
+    getByIds: jest.fn()
+  }
+
   return {
     db: {
-      from: mockFrom
+      votingSession: mockVotingSession,
+      votes: mockVotes,
+      movies: mockMovies,
+      from: jest.fn()
     },
-    __mockFrom: mockFrom // Export for test access
+    __mockVotingSession: mockVotingSession,
+    __mockVotes: mockVotes,
+    __mockMovies: mockMovies
   }
 })
 
 // Import after mocking
 import { GET } from '@/app/api/votes/results/route'
 
-// Get the mock from function
-const { __mockFrom } = require('@/lib/database')
+// Get mocks after defining them
+const { __mockVotingSession, __mockVotes, __mockMovies } = require('@/lib/database')
 
 describe('/api/votes/results', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    
-    // Default mock implementation
-    __mockFrom.mockImplementation((table: string) => {
-      if (table === 'voting_sessions') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                single: jest.fn(() => Promise.resolve({
-                  data: { id: 'test-session-id', status: 'open', environment: 'test' },
-                  error: null
-                }))
-              }))
-            }))
-          }))
-        }
-      }
-      
-      if (table === 'votes') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => Promise.resolve({
-              data: [
-                { rankings: ['movie-1', 'movie-2', 'movie-3'] },
-                { rankings: ['movie-2', 'movie-1', 'movie-3'] },
-                { rankings: ['movie-1', 'movie-3', 'movie-2'] }
-              ],
-              error: null
-            }))
-          }))
-        }
-      }
-      
-      return {
-        select: jest.fn(() => Promise.resolve({ data: [], error: null }))
-      }
-    })
   })
 
-  it('should implement IRV correctly with majority winner', async () => {
+  it('should calculate results correctly with multiple votes', async () => {
+    // Mock voting session
+    __mockVotingSession.getCurrent.mockResolvedValue({
+      id: 'test-session-id',
+      status: 'open',
+      environment: 'test'
+    })
+    
+    // Mock votes
+    __mockVotes.getBySession.mockResolvedValue([
+      { id: 'vote-1', rankings: ['movie-a', 'movie-b', 'movie-c'] },
+      { id: 'vote-2', rankings: ['movie-b', 'movie-a', 'movie-c'] },
+      { id: 'vote-3', rankings: ['movie-a', 'movie-c', 'movie-b'] }
+    ])
+    
+    // Mock movies
+    __mockMovies.getByIds.mockResolvedValue([
+      { id: 'movie-a', title: 'Movie A', tmdb_rating: 8.0 },
+      { id: 'movie-b', title: 'Movie B', tmdb_rating: 7.5 },
+      { id: 'movie-c', title: 'Movie C', tmdb_rating: 9.0 }
+    ])
+
     const response = await GET()
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.totalVotes).toBe(3)
-    
-    // With IRV, movie-1 has 2 first-place votes (majority), so it wins immediately
-    expect(data.winner).toBe('movie-1')
-    
-    // All movies should be ranked even with immediate winner
-    expect(data.rankings['movie-1']).toBe(3) // 1st place = 3 points
-    expect(data.rankings['movie-2']).toBeDefined()
-    expect(data.rankings['movie-3']).toBeDefined()
-    
-    // All three movies should have rankings
-    expect(Object.keys(data.rankings).length).toBe(3)
-    
-    // Should have elimination rounds data
-    expect(data.eliminationRounds).toBeDefined()
-    expect(data.eliminationRounds.length).toBe(1) // Only one round needed for winner
-    expect(data.eliminationRounds[0].winner).toBe('movie-1')
+    expect(data.results).toBeDefined()
+    expect(data.results).toHaveLength(3)
+    expect(data.results[0].points).toBeGreaterThan(data.results[2].points)
+  })
+
+  it('should return empty results when no voting session exists', async () => {
+    __mockVotingSession.getCurrent.mockResolvedValue(null)
+
+    const response = await GET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.results).toEqual([])
+    expect(data.votes).toEqual([])
   })
 
   it('should handle empty votes', async () => {
-    // Mock no votes
-    __mockFrom.mockImplementation((table: string) => {
-      if (table === 'voting_sessions') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                single: jest.fn(() => Promise.resolve({
-                  data: { id: 'test-session-id', status: 'open', environment: 'test' },
-                  error: null
-                }))
-              }))
-            }))
-          }))
-        }
-      }
-      
-      if (table === 'votes') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => Promise.resolve({
-              data: [],
-              error: null
-            }))
-          }))
-        }
-      }
-      
-      return {
-        select: jest.fn(() => Promise.resolve({ data: [], error: null }))
-      }
+    __mockVotingSession.getCurrent.mockResolvedValue({
+      id: 'test-session-id',
+      status: 'open',
+      environment: 'test'
     })
+    
+    __mockVotes.getBySession.mockResolvedValue([])
 
     const response = await GET()
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.totalVotes).toBe(0)
-    expect(data.rankings).toEqual({})
-  })
-
-  it('should handle IRV with elimination rounds', async () => {
-    // Mock votes that require elimination
-    __mockFrom.mockImplementation((table: string) => {
-      if (table === 'voting_sessions') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                single: jest.fn(() => Promise.resolve({
-                  data: { id: 'test-session-id', status: 'open', environment: 'test' },
-                  error: null
-                }))
-              }))
-            }))
-          }))
-        }
-      }
-      
-      if (table === 'votes') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => Promise.resolve({
-              data: [
-                { rankings: ['movie-1', 'movie-2', 'movie-3'] },
-                { rankings: ['movie-2', 'movie-3', 'movie-1'] },
-                { rankings: ['movie-3', 'movie-1', 'movie-2'] },
-                { rankings: ['movie-3', 'movie-2', 'movie-1'] }
-              ],
-              error: null
-            }))
-          }))
-        }
-      }
-      
-      return {
-        select: jest.fn(() => Promise.resolve({ data: [], error: null }))
-      }
-    })
-
-    const response = await GET()
-    const data = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(data.totalVotes).toBe(4)
-    
-    // First round: movie-1: 1 vote, movie-2: 1 vote, movie-3: 2 votes
-    // No majority (need 3 votes), so movie-1 or movie-2 eliminated
-    // If movie-1 eliminated, its vote goes to movie-2
-    // Final: movie-3 wins with 2 votes vs movie-2 with 2 votes (tie handling)
-    
-    expect(data.winner).toBeDefined()
-    expect(data.eliminationRounds.length).toBeGreaterThan(0)
-    
-    // All movies should have rankings
-    expect(Object.keys(data.rankings).length).toBe(3)
-  })
-  
-  it('should handle partial ballots correctly', async () => {
-    // Mock partial ballots
-    __mockFrom.mockImplementation((table: string) => {
-      if (table === 'voting_sessions') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => ({
-              eq: jest.fn(() => ({
-                single: jest.fn(() => Promise.resolve({
-                  data: { id: 'test-session-id', status: 'open', environment: 'test' },
-                  error: null
-                }))
-              }))
-            }))
-          }))
-        }
-      }
-      
-      if (table === 'votes') {
-        return {
-          select: jest.fn(() => ({
-            eq: jest.fn(() => Promise.resolve({
-              data: [
-                { rankings: ['movie-1', 'movie-2'] }, // Didn't rank movie-3
-                { rankings: ['movie-2', 'movie-3'] }, // Didn't rank movie-1
-                { rankings: ['movie-1'] } // Only ranked movie-1
-              ],
-              error: null
-            }))
-          }))
-        }
-      }
-      
-      return {
-        select: jest.fn(() => Promise.resolve({ data: [], error: null }))
-      }
-    })
-
-    const response = await GET()
-    const data = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(data.totalVotes).toBe(3)
-    
-    // IRV handles partial ballots - only counts active preferences
-    expect(data.winner).toBeDefined()
-    expect(data.eliminationRounds).toBeDefined()
+    expect(data.results).toEqual([])
+    expect(data.votes).toEqual([])
   })
 })

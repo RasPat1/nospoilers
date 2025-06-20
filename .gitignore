@@ -31,3 +31,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Demo videos
+public/videos/*.mp4
+public/videos/*.webm
+public/demo-thumbnails/*.jpg
+public/demo-thumbnails/*.png
+demo-output/

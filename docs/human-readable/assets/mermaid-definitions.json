@@ -1,0 +1,62 @@
+[
+  {
+    "id": "user-flow-flow_first_time-1",
+    "name": "user-flow-flow_first_time",
+    "definition": "flowchart TD\n    step1[\"Land on Homepage\"]\n    step1 --> decision0{Ready to start voting?}\n    decision0 -->|Yes| step2a\n    decision0 -->|Watch Demo| step2b\n    decision0 -->|Learn More| step2c\n    step2a[\"Navigate to Voting\"]\n    step1 --> step2a\n    step2b[\"Watch Demo Video\"]\n    step2a --> step2b\n    step2c[\"Scroll for Information\"]\n    step2b --> step2c\n    step3[\"Add Movies\"]\n    step2c --> step3\n    step4[\"Rank Movies\"]\n    step3 --> step4\n    step5[\"Submit Vote\"]\n    step4 --> step5\n    step5 --> outcome60[success]\n    outcome60 --> step6\n    step5 --> outcome61[error]\n    outcome61 --> step4\n    step6[\"View Results\"]\n    step5 --> step6\n"
+  },
+  {
+    "id": "user-flow-flow_returning-2",
+    "name": "user-flow-flow_returning",
+    "definition": "flowchart TD\n    step1[\"Visit Site\"]\n    step2[\"Navigate to Voting\"]\n    step1 --> step2\n    step2 --> outcome10[undefined]\n    outcome10 --> step3\n    step2 --> outcome11[undefined]\n    outcome11 --> flowfirsttime.step3\n    step3[\"View Results\"]\n    step2 --> step3\n"
+  },
+  {
+    "id": "user-flow-flow_suggester-3",
+    "name": "user-flow-flow_suggester",
+    "definition": "flowchart TD\n    step1[\"Access Voting Page\"]\n    step2[\"Add Movies Only\"]\n    step1 --> step2\n    step2 --> decision1{Ready to vote?}\n    decision1 -->|Yes| flowfirsttime.step4\n    decision1 -->|No| step3\n    step3[\"Leave Without Voting\"]\n    step2 --> step3\n"
+  },
+  {
+    "id": "user-flow-flow_admin-4",
+    "name": "user-flow-flow_admin",
+    "definition": "flowchart TD\n    step1[\"Access Admin Panel\"]\n    step2[\"Authenticate\"]\n    step1 --> step2\n    step2 --> outcome10[success]\n    outcome10 --> step3\n    step2 --> outcome11[failure]\n    step3[\"View Dashboard\"]\n    step2 --> step3\n    step4[\"Manage Session\"]\n    step3 --> step4\n"
+  },
+  {
+    "id": "user-flow-flow_mobile-5",
+    "name": "user-flow-flow_mobile",
+    "definition": "flowchart TD\n    step1[\"Mobile Homepage\"]\n    step2[\"Mobile Voting\"]\n    step1 --> step2\n    step3[\"Mobile Results\"]\n    step2 --> step3\n"
+  },
+  {
+    "id": "frontend-architecture-6",
+    "name": "frontend-architecture",
+    "definition": "graph TB\n    subgraph \"Pages\"\n        HomePage[HomePage /]\n        VotePage[VotePage /vote]\n        ResultsPage[ResultsPage /results]\n        AdminPage[AdminPage /admin]\n    end\n    \n    subgraph \"Components\"\n        VotingInterface[VotingInterface]\n        MovieSearch[MovieSearch]\n        Results[Results]\n    end\n    \n    subgraph \"Hooks\"\n        WebSocket[useWebSocket]\n    end\n    \n    HomePage --> DemoVideo[DemoVideoGallery]\n    VotePage --> VotingInterface\n    VotingInterface --> MovieSearch\n    ResultsPage --> Results\n    Results --> WebSocket\n    VotingInterface --> WebSocket"
+  },
+  {
+    "id": "data-flow-flow_add_movie-7",
+    "name": "data-flow-flow_add_movie",
+    "definition": "sequenceDiagram\n    participant User\n    participant Frontend\n    participant API\n    participant Database\n    participant External\n\n    User->>Frontend: Input text in search box\n    Frontend->>API: Debounced API call\n    API->>External: TMDB API request (TMDB)\n    User->>Frontend: Display autocomplete\n    User->>Frontend: Update UI\n"
+  },
+  {
+    "id": "data-flow-flow_submit_vote-8",
+    "name": "data-flow-flow_submit_vote",
+    "definition": "sequenceDiagram\n    participant User\n    participant Frontend\n    participant API\n    participant Database\n    participant External\n\n    User->>Frontend: Validate rankings\n    API->>Database: Check existing vote\n    API->>Database: Create user session\n    API->>Database: Store vote\n    API-->>Frontend: Broadcast event (WebSocket)\n    Frontend->>User: Redirect to results\n"
+  },
+  {
+    "id": "data-flow-flow_real_time_updates-9",
+    "name": "data-flow-flow_real_time_updates",
+    "definition": "sequenceDiagram\n    participant User\n    participant Frontend\n    participant API\n    participant Database\n    participant External\n\n    User->>Frontend: Trigger refresh\n    Frontend->>API: Fetch latest data\n"
+  },
+  {
+    "id": "data-flow-flow_calculate_winner-10",
+    "name": "data-flow-flow_calculate_winner",
+    "definition": "sequenceDiagram\n    participant User\n    participant Frontend\n    participant API\n    participant Database\n    participant External\n\n    User->>Frontend: GET /api/votes/results\n    API->>Database: Fetch all votes\n    User->>Frontend: Display results\n"
+  },
+  {
+    "id": "database-schema-11",
+    "name": "database-schema",
+    "definition": "erDiagram\n    movies {\n        string id\n        string title\n        string tmdb_id\n        string poster_path\n        string vote_average\n        string director\n        string actors\n        string plot\n    }\n    voting_sessions {\n        string id\n        string status\n        string winner_movie_id\n        string created_at\n        string closed_at\n        string environment\n    }\n    user_sessions {\n        string id\n        string created_at\n    }\n    votes {\n        string id\n        string voting_session_id\n        string user_session_id\n        string rankings\n        string created_at\n    }\n    voting_sessions ||--o{ movies : \"winner_movie_id\"\n    votes ||--o{ voting_sessions : \"voting_session_id\"\n    votes ||--o{ user_sessions : \"user_session_id\"\n"
+  },
+  {
+    "id": "algorithm-algo_irv-12",
+    "name": "algorithm-algo_irv",
+    "definition": "flowchart TD\n    step1[\"Step 1: Count first-choice votes for each movie\"]\n    step2[\"Step 2: Check if any movie has > 50% of votes\"]\n    step1 --> step2\n    step2 --> decision2{If yes, declare winner. If no, continue.}\n    decision2 -->|Yes| winner[Declare Winner]\n    decision2 -->|No| step3\n    step3[\"Step 3: Eliminate movie with fewest first-choice votes\"]\n    step2 --> step3\n    step4[\"Step 4: Redistribute votes from eliminated movie(s) to next choices\"]\n    step3 --> step4\n    step5[\"Step 5: Repeat from step 2 until winner found\"]\n    step4 --> step5\n"
+  }
+]

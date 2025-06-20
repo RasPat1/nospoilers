@@ -20,7 +20,9 @@
     "db:dev": "docker-compose up -d postgres-dev",
     "db:test": "docker-compose up -d postgres-test",
     "db:stop": "docker-compose down",
-    "db:clean": "docker-compose down -v"
+    "db:clean": "docker-compose down -v",
+    "generate-docs": "node docs/generate-docs.js",
+    "generate-docs:watch": "node docs/generate-docs.js --watch"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",

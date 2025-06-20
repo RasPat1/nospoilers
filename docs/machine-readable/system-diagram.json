@@ -1,0 +1,294 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2024-06-20",
+  "components": {
+    "frontend": {
+      "pages": [
+        {
+          "id": "page_home",
+          "path": "/",
+          "component": "app/page.tsx",
+          "imports": ["DemoVideoGallery"],
+          "state": "none",
+          "purpose": "Landing page with value proposition"
+        },
+        {
+          "id": "page_vote",
+          "path": "/vote",
+          "component": "app/vote/page.tsx",
+          "imports": ["VotingInterface"],
+          "state": "session-based",
+          "purpose": "Movie selection and ranking interface"
+        },
+        {
+          "id": "page_results",
+          "path": "/results",
+          "component": "app/results/page.tsx",
+          "imports": ["Results"],
+          "state": "real-time updates",
+          "purpose": "Live voting results display"
+        },
+        {
+          "id": "page_admin",
+          "path": "/admin",
+          "component": "app/admin/page.tsx",
+          "imports": [],
+          "state": "authenticated",
+          "purpose": "Administrative controls"
+        }
+      ],
+      "components": [
+        {
+          "id": "comp_voting_interface",
+          "file": "components/VotingInterface.tsx",
+          "imports": ["MovieSearchForm", "useWebSocket"],
+          "props": [],
+          "state": ["movies", "rankings", "hasVoted"],
+          "events": ["onMovieAdd", "onRankingChange", "onSubmit"]
+        },
+        {
+          "id": "comp_movie_search",
+          "file": "components/MovieSearch.tsx",
+          "imports": [],
+          "props": ["onMovieSelect", "existingMovies"],
+          "api_calls": ["/api/movies/search"],
+          "features": ["debounced search", "autocomplete"]
+        },
+        {
+          "id": "comp_results",
+          "file": "components/Results.tsx",
+          "imports": ["useWebSocket"],
+          "state": ["results", "voteCount", "winner"],
+          "api_calls": ["/api/votes/results", "/api/votes/count"],
+          "features": ["auto-refresh", "real-time updates"]
+        }
+      ],
+      "hooks": [
+        {
+          "id": "hook_websocket",
+          "file": "hooks/useWebSocket.ts",
+          "purpose": "Real-time communication",
+          "events": ["vote_submitted", "voting_closed", "results_updated"],
+          "reconnect": true
+        }
+      ]
+    },
+    "backend": {
+      "api_routes": [
+        {
+          "id": "api_movies",
+          "path": "/api/movies",
+          "methods": ["GET", "POST", "DELETE"],
+          "file": "app/api/movies/route.ts",
+          "database_calls": ["movies.getAll", "movies.create", "movies.delete"],
+          "validations": ["title required", "no duplicates"]
+        },
+        {
+          "id": "api_movies_search",
+          "path": "/api/movies/search",
+          "methods": ["GET"],
+          "file": "app/api/movies/search/route.ts",
+          "external_api": "TMDB",
+          "params": ["query"],
+          "cache": false
+        },
+        {
+          "id": "api_votes",
+          "path": "/api/votes",
+          "methods": ["POST"],
+          "file": "app/api/votes/route.ts",
+          "database_calls": ["votes.create", "userSessions.upsert"],
+          "validations": ["rankings required", "one vote per session"],
+          "websocket_events": ["vote_submitted"]
+        },
+        {
+          "id": "api_votes_results",
+          "path": "/api/votes/results",
+          "methods": ["GET"],
+          "file": "app/api/votes/results/route.ts",
+          "database_calls": ["votes.getBySession", "calculateIRV"],
+          "algorithm": "Instant Runoff Voting",
+          "cache": "5 seconds"
+        },
+        {
+          "id": "api_voting_session",
+          "path": "/api/voting-session",
+          "methods": ["GET", "POST"],
+          "file": "app/api/voting-session/route.ts",
+          "database_calls": ["votingSession.getCurrent", "votingSession.create"],
+          "purpose": "Manage voting lifecycle"
+        },
+        {
+          "id": "api_admin",
+          "path": "/api/admin/*",
+          "methods": ["POST", "GET"],
+          "authentication": "password-based",
+          "operations": ["close voting", "reset data", "view stats"]
+        }
+      ],
+      "websocket": {
+        "server": "websocket-server.js",
+        "port": 3001,
+        "events": {
+          "client_to_server": ["ping"],
+          "server_to_client": ["vote_submitted", "voting_closed", "results_updated"],
+          "broadcast": true
+        }
+      }
+    },
+    "database": {
+      "provider": "Supabase/PostgreSQL",
+      "tables": [
+        {
+          "name": "movies",
+          "fields": ["id", "title", "tmdb_id", "poster_path", "vote_average", "director", "actors", "plot"],
+          "relations": [],
+          "indexes": ["tmdb_id", "created_at"]
+        },
+        {
+          "name": "voting_sessions",
+          "fields": ["id", "status", "winner_movie_id", "created_at", "closed_at", "environment"],
+          "relations": [
+            {"field": "winner_movie_id", "references": "movies.id"}
+          ],
+          "constraints": ["status in ('open', 'closed')"]
+        },
+        {
+          "name": "user_sessions",
+          "fields": ["id", "created_at"],
+          "relations": [],
+          "purpose": "Anonymous user tracking"
+        },
+        {
+          "name": "votes",
+          "fields": ["id", "voting_session_id", "user_session_id", "rankings", "created_at"],
+          "relations": [
+            {"field": "voting_session_id", "references": "voting_sessions.id"},
+            {"field": "user_session_id", "references": "user_sessions.id"}
+          ],
+          "constraints": ["unique(voting_session_id, user_session_id)"]
+        }
+      ],
+      "abstraction_layer": {
+        "file": "lib/database.ts",
+        "supports": ["Supabase", "Local PostgreSQL"],
+        "methods": ["movies.*", "votes.*", "votingSession.*", "userSessions.*"]
+      }
+    },
+    "external_services": {
+      "tmdb": {
+        "purpose": "Movie metadata",
+        "api_key": "TMDB_API_KEY",
+        "endpoints": ["/search/movie", "/movie/{id}", "/movie/{id}/credits"],
+        "rate_limit": "40 requests/10 seconds"
+      },
+      "vercel": {
+        "purpose": "Hosting and deployment",
+        "features": ["auto-deploy from GitHub", "serverless functions", "edge network"]
+      },
+      "supabase": {
+        "purpose": "Database and real-time",
+        "features": ["PostgreSQL", "Row Level Security", "Real-time subscriptions"],
+        "tier": "Free (500MB)"
+      }
+    }
+  },
+  "data_flow": [
+    {
+      "id": "flow_add_movie",
+      "trigger": "User searches for movie",
+      "steps": [
+        {"action": "Input text in search box", "component": "MovieSearch"},
+        {"action": "Debounced API call", "endpoint": "/api/movies/search"},
+        {"action": "TMDB API request", "service": "TMDB"},
+        {"action": "Return results", "format": "JSON array"},
+        {"action": "Display autocomplete", "component": "MovieSearch"},
+        {"action": "User selects movie", "event": "onClick"},
+        {"action": "POST to /api/movies", "validation": "no duplicates"},
+        {"action": "Store in database", "table": "movies"},
+        {"action": "Update UI", "component": "VotingInterface"}
+      ]
+    },
+    {
+      "id": "flow_submit_vote",
+      "trigger": "User clicks submit vote",
+      "steps": [
+        {"action": "Validate rankings", "component": "VotingInterface"},
+        {"action": "Get/create session", "storage": "localStorage"},
+        {"action": "POST to /api/votes", "payload": "rankings + sessionId"},
+        {"action": "Check existing vote", "database": "votes"},
+        {"action": "Create user session", "database": "user_sessions"},
+        {"action": "Store vote", "database": "votes"},
+        {"action": "Broadcast event", "websocket": "vote_submitted"},
+        {"action": "Redirect to results", "navigation": "/results"}
+      ]
+    },
+    {
+      "id": "flow_real_time_updates",
+      "trigger": "WebSocket connection",
+      "steps": [
+        {"action": "Connect to WS server", "port": 3001},
+        {"action": "Subscribe to events", "events": ["vote_submitted"]},
+        {"action": "Receive broadcast", "from": "any client vote"},
+        {"action": "Trigger refresh", "component": "Results"},
+        {"action": "Fetch latest data", "endpoint": "/api/votes/results"},
+        {"action": "Update UI", "animation": "smooth transition"}
+      ]
+    },
+    {
+      "id": "flow_calculate_winner",
+      "trigger": "Results page load or refresh",
+      "steps": [
+        {"action": "GET /api/votes/results", "component": "Results"},
+        {"action": "Fetch all votes", "database": "votes"},
+        {"action": "Run IRV algorithm", "location": "server-side"},
+        {"action": "Calculate rounds", "until": "majority found"},
+        {"action": "Return results", "format": "ranked list + winner"},
+        {"action": "Display results", "component": "Results"}
+      ]
+    }
+  ],
+  "state_management": {
+    "client_side": {
+      "react_state": [
+        {"component": "VotingInterface", "state": ["movies", "rankings", "isSubmitting"]},
+        {"component": "Results", "state": ["results", "voteCount", "lastUpdated"]},
+        {"component": "Admin", "state": ["isAuthenticated", "stats"]}
+      ],
+      "local_storage": [
+        {"key": "voting-session-id", "type": "UUID", "purpose": "Track user session"},
+        {"key": "has-voted", "type": "boolean", "purpose": "Prevent duplicate votes"}
+      ],
+      "session_storage": []
+    },
+    "server_side": {
+      "database_state": ["voting_sessions.status", "votes", "movies"],
+      "cache": ["TMDB search results (in-memory)", "Vote calculations (5 second TTL)"],
+      "environment": ["development", "production", "test"]
+    }
+  },
+  "deployment_architecture": {
+    "environments": {
+      "development": {
+        "database": "Local PostgreSQL via Docker",
+        "api": "Next.js dev server",
+        "websocket": "Local Node.js server"
+      },
+      "production": {
+        "database": "Supabase PostgreSQL",
+        "api": "Vercel Serverless Functions",
+        "websocket": "Separate Node.js server",
+        "cdn": "Vercel Edge Network"
+      },
+      "test": {
+        "database": "Test Supabase project",
+        "mocking": "API responses for demos"
+      }
+    },
+    "ci_cd": {
+      "trigger": "Push to main branch",
+      "steps": ["Run tests", "Build", "Deploy to Vercel", "Run health checks"],
+      "rollback": "Automatic on failure"
+    }
+  }
+}

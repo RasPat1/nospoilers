@@ -1,0 +1,448 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2024-06-20",
+  "flows": {
+    "first_time_visitor": {
+      "id": "flow_first_time",
+      "name": "First Time Visitor Flow",
+      "description": "Journey of a new user discovering and using NoSpoilers",
+      "steps": [
+        {
+          "id": "step_1",
+          "name": "Land on Homepage",
+          "page": "/",
+          "actions": ["View hero section", "Read value proposition"],
+          "decisions": [
+            {
+              "question": "Ready to start voting?",
+              "options": [
+                {"choice": "Yes", "next": "step_2a"},
+                {"choice": "Watch Demo", "next": "step_2b"},
+                {"choice": "Learn More", "next": "step_2c"}
+              ]
+            }
+          ]
+        },
+        {
+          "id": "step_2a",
+          "name": "Navigate to Voting",
+          "page": "/vote",
+          "trigger": "Click 'Start Voting Now' button",
+          "actions": ["View empty movie list", "See add movie interface"],
+          "next": "step_3"
+        },
+        {
+          "id": "step_2b",
+          "name": "Watch Demo Video",
+          "page": "/",
+          "trigger": "Click video play button",
+          "actions": ["Watch demonstration", "Pause/resume video"],
+          "next": "step_1"
+        },
+        {
+          "id": "step_2c",
+          "name": "Scroll for Information",
+          "page": "/",
+          "trigger": "Scroll down",
+          "actions": ["Read features", "View how it works"],
+          "next": "step_1"
+        },
+        {
+          "id": "step_3",
+          "name": "Add Movies",
+          "page": "/vote",
+          "actions": ["Search for movies", "Select from autocomplete", "Add multiple movies"],
+          "validations": ["At least one movie required", "No duplicate movies"],
+          "next": "step_4"
+        },
+        {
+          "id": "step_4",
+          "name": "Rank Movies",
+          "page": "/vote",
+          "actions": ["Drag to reorder", "Click position buttons", "Remove movies"],
+          "validations": ["At least one movie must be ranked"],
+          "next": "step_5"
+        },
+        {
+          "id": "step_5",
+          "name": "Submit Vote",
+          "page": "/vote",
+          "trigger": "Click 'Submit Vote' button",
+          "actions": ["Validate rankings", "Store vote", "Create session"],
+          "outcomes": [
+            {"result": "success", "next": "step_6"},
+            {"result": "error", "next": "step_4", "message": "Fix validation errors"}
+          ]
+        },
+        {
+          "id": "step_6",
+          "name": "View Results",
+          "page": "/results",
+          "actions": ["See current standings", "View vote count", "Check winner"],
+          "features": ["Auto-refresh every 5 seconds", "Real-time updates via WebSocket"]
+        }
+      ]
+    },
+    "returning_voter": {
+      "id": "flow_returning",
+      "name": "Returning Voter Flow",
+      "description": "User who has already voted checking results",
+      "steps": [
+        {
+          "id": "step_1",
+          "name": "Visit Site",
+          "page": "/",
+          "actions": ["Check if already voted"],
+          "next": "step_2"
+        },
+        {
+          "id": "step_2",
+          "name": "Navigate to Voting",
+          "page": "/vote",
+          "trigger": "Click 'Start Voting Now'",
+          "outcomes": [
+            {"condition": "already_voted", "next": "step_3", "message": "Thanks for voting!"},
+            {"condition": "not_voted", "next": "flow_first_time.step_3"}
+          ]
+        },
+        {
+          "id": "step_3",
+          "name": "View Results",
+          "page": "/results",
+          "trigger": "Redirect or manual navigation",
+          "actions": ["Monitor live results", "See final winner when closed"]
+        }
+      ]
+    },
+    "movie_suggester": {
+      "id": "flow_suggester",
+      "name": "Movie Suggester Flow",
+      "description": "User adding movies without voting",
+      "steps": [
+        {
+          "id": "step_1",
+          "name": "Access Voting Page",
+          "page": "/vote",
+          "actions": ["View current movie list"]
+        },
+        {
+          "id": "step_2",
+          "name": "Add Movies Only",
+          "page": "/vote",
+          "actions": ["Search and add movies", "See movies appear in list"],
+          "decisions": [
+            {
+              "question": "Ready to vote?",
+              "options": [
+                {"choice": "Yes", "next": "flow_first_time.step_4"},
+                {"choice": "No", "next": "step_3"}
+              ]
+            }
+          ]
+        },
+        {
+          "id": "step_3",
+          "name": "Leave Without Voting",
+          "actions": ["Movies remain available for others", "No vote recorded"]
+        }
+      ]
+    },
+    "admin_flow": {
+      "id": "flow_admin",
+      "name": "Admin Management Flow",
+      "description": "Administrative actions for managing voting sessions",
+      "steps": [
+        {
+          "id": "step_1",
+          "name": "Access Admin Panel",
+          "page": "/admin",
+          "trigger": "Navigate with ?admin=password",
+          "validations": ["Correct admin password required"]
+        },
+        {
+          "id": "step_2",
+          "name": "Authenticate",
+          "page": "/admin",
+          "actions": ["Enter username", "Enter password", "Submit credentials"],
+          "outcomes": [
+            {"result": "success", "next": "step_3"},
+            {"result": "failure", "message": "Invalid credentials"}
+          ]
+        },
+        {
+          "id": "step_3",
+          "name": "View Dashboard",
+          "page": "/admin",
+          "actions": ["See statistics", "View current session", "Check vote count"],
+          "features": ["Total votes", "Number of movies", "Session status"]
+        },
+        {
+          "id": "step_4",
+          "name": "Manage Session",
+          "page": "/admin",
+          "actions": [
+            {"action": "Close voting", "effect": "Determines winner"},
+            {"action": "Reset session", "effect": "Clears all data"},
+            {"action": "Delete movie", "effect": "Removes from candidates"}
+          ]
+        }
+      ]
+    },
+    "mobile_user": {
+      "id": "flow_mobile",
+      "name": "Mobile User Flow",
+      "description": "Optimized flow for mobile device users",
+      "steps": [
+        {
+          "id": "step_1",
+          "name": "Mobile Homepage",
+          "page": "/",
+          "features": ["Responsive layout", "Touch-friendly buttons", "Simplified navigation"]
+        },
+        {
+          "id": "step_2",
+          "name": "Mobile Voting",
+          "page": "/vote",
+          "actions": ["Tap to add movies", "Use position buttons for ranking"],
+          "features": ["No drag-and-drop", "Large touch targets", "Simplified interface"]
+        },
+        {
+          "id": "step_3",
+          "name": "Mobile Results",
+          "page": "/results",
+          "features": ["Vertical layout", "Scrollable results", "Touch to expand details"]
+        }
+      ]
+    }
+  },
+  "interactive_elements": {
+    "homepage": {
+      "buttons": [
+        {
+          "id": "btn_start_voting",
+          "text": "Start Voting Now",
+          "type": "primary",
+          "action": "navigate",
+          "target": "/vote",
+          "location": "hero section",
+          "mobile_friendly": true
+        },
+        {
+          "id": "btn_watch_demo",
+          "text": "Watch Demo",
+          "type": "secondary",
+          "action": "play_video",
+          "target": "main_demo_video",
+          "location": "hero section",
+          "mobile_friendly": true
+        },
+        {
+          "id": "btn_create_session",
+          "text": "Create Voting Session",
+          "type": "primary",
+          "action": "navigate",
+          "target": "/vote",
+          "location": "CTA section",
+          "mobile_friendly": true
+        }
+      ],
+      "videos": [
+        {
+          "id": "main_demo_video",
+          "location": "hero section",
+          "controls": ["play", "pause", "fullscreen"],
+          "autoplay": false,
+          "muted": true
+        }
+      ],
+      "links": [
+        {
+          "id": "link_features",
+          "text": "Features",
+          "action": "scroll",
+          "target": "#features",
+          "location": "navigation"
+        }
+      ]
+    },
+    "voting_page": {
+      "inputs": [
+        {
+          "id": "input_movie_search",
+          "type": "text",
+          "placeholder": "Search for a movie...",
+          "features": ["autocomplete", "debounced search", "TMDB integration"],
+          "validations": ["non-empty", "min 2 characters for search"]
+        }
+      ],
+      "buttons": [
+        {
+          "id": "btn_submit_vote",
+          "text": "Submit Vote",
+          "type": "primary",
+          "action": "submit_form",
+          "validations": ["at least one movie ranked"],
+          "states": {
+            "enabled": "Ready to submit",
+            "disabled": "Add and rank movies first",
+            "loading": "Submitting..."
+          }
+        },
+        {
+          "id": "btn_position_up",
+          "text": "↑",
+          "type": "icon",
+          "action": "reorder",
+          "mobile_only": true
+        },
+        {
+          "id": "btn_position_down",
+          "text": "↓",
+          "type": "icon",
+          "action": "reorder",
+          "mobile_only": true
+        },
+        {
+          "id": "btn_remove_movie",
+          "text": "×",
+          "type": "icon",
+          "action": "remove",
+          "location": "each ranked movie"
+        }
+      ],
+      "interactions": [
+        {
+          "id": "drag_reorder",
+          "type": "drag_drop",
+          "desktop_only": true,
+          "action": "reorder movies"
+        },
+        {
+          "id": "click_movie_result",
+          "type": "click",
+          "target": "autocomplete results",
+          "action": "add movie to list"
+        }
+      ]
+    },
+    "results_page": {
+      "displays": [
+        {
+          "id": "vote_count",
+          "type": "text",
+          "updates": "real-time",
+          "format": "X votes cast"
+        },
+        {
+          "id": "movie_rankings",
+          "type": "list",
+          "updates": "every 5 seconds",
+          "shows": ["position", "movie title", "points", "poster"]
+        },
+        {
+          "id": "winner_announcement",
+          "type": "card",
+          "condition": "voting closed",
+          "shows": ["winner movie", "full details", "final vote count"]
+        }
+      ],
+      "features": [
+        {
+          "id": "auto_refresh",
+          "type": "timer",
+          "interval": "5 seconds",
+          "action": "fetch latest results"
+        },
+        {
+          "id": "websocket_updates",
+          "type": "real-time",
+          "events": ["vote_submitted", "session_closed"]
+        }
+      ]
+    },
+    "admin_page": {
+      "inputs": [
+        {
+          "id": "input_username",
+          "type": "text",
+          "placeholder": "Username",
+          "required": true
+        },
+        {
+          "id": "input_password",
+          "type": "password",
+          "placeholder": "Password",
+          "required": true
+        }
+      ],
+      "buttons": [
+        {
+          "id": "btn_login",
+          "text": "Login",
+          "type": "primary",
+          "action": "authenticate"
+        },
+        {
+          "id": "btn_close_voting",
+          "text": "Close Voting",
+          "type": "danger",
+          "action": "close_session",
+          "confirmation": "Are you sure? This will determine the winner."
+        },
+        {
+          "id": "btn_reset",
+          "text": "Reset All Data",
+          "type": "danger",
+          "action": "reset_session",
+          "confirmation": "This will delete all votes and movies. Are you sure?"
+        },
+        {
+          "id": "btn_delete_movie",
+          "text": "Delete",
+          "type": "danger",
+          "action": "delete_movie",
+          "location": "each movie row"
+        }
+      ],
+      "displays": [
+        {
+          "id": "stats_grid",
+          "type": "grid",
+          "shows": ["total votes", "total movies", "session status", "session duration"]
+        },
+        {
+          "id": "movies_table",
+          "type": "table",
+          "columns": ["movie", "added by", "votes", "actions"]
+        }
+      ]
+    }
+  },
+  "error_states": {
+    "no_movies": {
+      "page": "/vote",
+      "message": "No movies added yet. Be the first to suggest a movie!",
+      "action": "Show empty state with search prompt"
+    },
+    "already_voted": {
+      "page": "/vote",
+      "message": "Thanks for voting! You can view the results to see how others are voting.",
+      "action": "Show message with link to results"
+    },
+    "no_votes": {
+      "page": "/results",
+      "message": "No votes yet. Be the first to vote!",
+      "action": "Show empty state with link to voting"
+    },
+    "api_error": {
+      "pages": ["all"],
+      "message": "Something went wrong. Please try again.",
+      "action": "Show error message with retry button"
+    },
+    "offline": {
+      "pages": ["all"],
+      "message": "You appear to be offline. Some features may not work.",
+      "action": "Show offline indicator, disable real-time features"
+    }
+  }
+}

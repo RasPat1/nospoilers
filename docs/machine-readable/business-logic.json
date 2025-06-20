@@ -1,0 +1,328 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2024-06-20",
+  "core_purpose": "Enable fair, democratic movie selection through ranked choice voting without requiring user accounts",
+  "rules": {
+    "voting": {
+      "one_vote_per_session": {
+        "id": "rule_one_vote",
+        "description": "Each user session can only submit one vote per voting session",
+        "implementation": "Check votes table for existing user_session_id + voting_session_id",
+        "enforcement": "Server-side validation in /api/votes",
+        "error_message": "You have already voted in this session",
+        "testable": true,
+        "test_reference": "__tests__/api/votes.test.ts"
+      },
+      "minimum_one_movie": {
+        "id": "rule_min_movies",
+        "description": "Users must rank at least one movie to submit a vote",
+        "implementation": "Validate rankings array length > 0",
+        "enforcement": "Client and server validation",
+        "error_message": "Please rank at least one movie",
+        "testable": true
+      },
+      "valid_movie_ids": {
+        "id": "rule_valid_ids",
+        "description": "All movie IDs in rankings must exist in the database",
+        "implementation": "Verify each ID exists in movies table",
+        "enforcement": "Server-side validation",
+        "error_message": "Invalid movie selection",
+        "testable": true
+      },
+      "no_duplicate_rankings": {
+        "id": "rule_no_duplicates",
+        "description": "Each movie can only appear once in a user's ranking",
+        "implementation": "Check for unique values in rankings array",
+        "enforcement": "Client and server validation",
+        "error_message": "Each movie can only be ranked once",
+        "testable": true
+      },
+      "partial_ballots_allowed": {
+        "id": "rule_partial_ballots",
+        "description": "Users can rank a subset of available movies",
+        "rationale": "Not everyone has seen all movies",
+        "implementation": "No requirement to rank all movies",
+        "testable": true
+      }
+    },
+    "movies": {
+      "unique_by_tmdb": {
+        "id": "rule_unique_tmdb",
+        "description": "No duplicate movies based on TMDB ID",
+        "implementation": "Check tmdb_id before insertion",
+        "enforcement": "Database constraint and API validation",
+        "error_message": "This movie has already been added",
+        "testable": true
+      },
+      "title_required": {
+        "id": "rule_title_required",
+        "description": "Every movie must have a title",
+        "implementation": "Non-null, non-empty title field",
+        "enforcement": "Database constraint and API validation",
+        "error_message": "Movie title is required",
+        "testable": true
+      },
+      "anyone_can_add": {
+        "id": "rule_open_addition",
+        "description": "Any user can add movies without authentication",
+        "rationale": "Low friction for participation",
+        "implementation": "No auth check on POST /api/movies",
+        "testable": true
+      }
+    },
+    "sessions": {
+      "auto_session_creation": {
+        "id": "rule_auto_session",
+        "description": "User sessions are created automatically on first interaction",
+        "implementation": "Generate UUID, store in localStorage",
+        "rationale": "No registration required",
+        "testable": true
+      },
+      "persistent_sessions": {
+        "id": "rule_persistent",
+        "description": "Sessions persist across browser refreshes",
+        "implementation": "localStorage for session ID",
+        "lifetime": "Until cleared by user",
+        "testable": true
+      },
+      "anonymous_sessions": {
+        "id": "rule_anonymous",
+        "description": "No personal information collected or required",
+        "implementation": "UUID-only identification",
+        "privacy": "GDPR compliant",
+        "testable": true
+      }
+    },
+    "admin": {
+      "password_protection": {
+        "id": "rule_admin_auth",
+        "description": "Admin panel requires password authentication",
+        "implementation": "Check ADMIN_SECRET env variable",
+        "enforcement": "Server-side validation",
+        "testable": true
+      },
+      "admin_capabilities": {
+        "id": "rule_admin_powers",
+        "description": "Admins can close voting, reset data, and delete movies",
+        "restrictions": "Cannot modify votes or see who voted for what",
+        "rationale": "Maintain voting integrity",
+        "testable": true
+      }
+    }
+  },
+  "algorithms": {
+    "instant_runoff_voting": {
+      "id": "algo_irv",
+      "name": "Instant Runoff Voting (IRV)",
+      "description": "Eliminates lowest-scoring candidates until one has majority",
+      "implementation_steps": [
+        {
+          "step": 1,
+          "action": "Count first-choice votes for each movie",
+          "code_reference": "lib/irv.ts:calculateIRVWinner"
+        },
+        {
+          "step": 2,
+          "action": "Check if any movie has > 50% of votes",
+          "condition": "If yes, declare winner. If no, continue."
+        },
+        {
+          "step": 3,
+          "action": "Eliminate movie with fewest first-choice votes",
+          "note": "In case of tie for last, eliminate all tied movies"
+        },
+        {
+          "step": 4,
+          "action": "Redistribute votes from eliminated movie(s) to next choices",
+          "note": "Skip already-eliminated movies"
+        },
+        {
+          "step": 5,
+          "action": "Repeat from step 2 until winner found",
+          "termination": "When one movie has majority or only one remains"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "No votes cast",
+          "result": "No winner declared",
+          "handling": "Show appropriate message"
+        },
+        {
+          "case": "All movies tied",
+          "result": "First movie by ID wins",
+          "rationale": "Deterministic tie-breaking"
+        },
+        {
+          "case": "Partial ballots",
+          "result": "Only counted for ranked movies",
+          "handling": "Exhausted ballots don't count in later rounds"
+        }
+      ],
+      "testable": true,
+      "test_reference": "__tests__/irv-algorithm.test.ts"
+    },
+    "point_calculation": {
+      "id": "algo_points",
+      "name": "Borda Count Points",
+      "description": "Points awarded based on ranking position",
+      "formula": "points = (total_movies - position + 1)",
+      "examples": [
+        {"position": 1, "movies": 5, "points": 5},
+        {"position": 2, "movies": 5, "points": 4},
+        {"position": 5, "movies": 5, "points": 1}
+      ],
+      "purpose": "Display relative popularity during voting",
+      "note": "Points are for display only, IRV determines winner"
+    }
+  },
+  "invariants": {
+    "voting_session_integrity": {
+      "id": "inv_session_integrity",
+      "description": "A voting session's results cannot change after closing",
+      "implementation": "Immutable after status = 'closed'",
+      "verification": "No votes accepted after closing",
+      "testable": true
+    },
+    "vote_immutability": {
+      "id": "inv_vote_immutable",
+      "description": "Votes cannot be modified after submission",
+      "implementation": "No UPDATE operations on votes table",
+      "rationale": "Ensures voting integrity",
+      "testable": true
+    },
+    "movie_availability": {
+      "id": "inv_movie_available",
+      "description": "All movies remain available throughout voting session",
+      "implementation": "No deletion during open session",
+      "exception": "Admin can delete if necessary",
+      "testable": true
+    },
+    "anonymous_voting": {
+      "id": "inv_anonymous",
+      "description": "Individual votes are never publicly associated with sessions",
+      "implementation": "Results show aggregate only",
+      "privacy": "No vote tracking",
+      "testable": true
+    }
+  },
+  "priorities": {
+    "features": [
+      {
+        "feature": "Core voting flow",
+        "priority": "P0 - Critical",
+        "description": "Add movies, rank them, submit vote, see results",
+        "rationale": "Minimum viable product"
+      },
+      {
+        "feature": "Real-time updates",
+        "priority": "P1 - High",
+        "description": "Live result updates via WebSocket",
+        "rationale": "Enhanced user experience"
+      },
+      {
+        "feature": "Mobile optimization",
+        "priority": "P1 - High", 
+        "description": "Touch-friendly interface for mobile",
+        "rationale": "Most users on mobile devices"
+      },
+      {
+        "feature": "Rich movie data",
+        "priority": "P2 - Medium",
+        "description": "Posters, cast, ratings from TMDB",
+        "rationale": "Helps users make informed choices"
+      },
+      {
+        "feature": "Admin panel",
+        "priority": "P2 - Medium",
+        "description": "Management interface for operators",
+        "rationale": "Needed for production use"
+      },
+      {
+        "feature": "Offline support",
+        "priority": "P3 - Low",
+        "description": "Basic functionality without internet",
+        "rationale": "Nice to have for reliability"
+      }
+    ],
+    "performance": [
+      {
+        "metric": "Page load time",
+        "target": "< 3 seconds on 3G",
+        "priority": "P1 - High"
+      },
+      {
+        "metric": "Vote submission",
+        "target": "< 1 second response",
+        "priority": "P0 - Critical"
+      },
+      {
+        "metric": "Result calculation",
+        "target": "< 500ms for 1000 votes",
+        "priority": "P1 - High"
+      }
+    ],
+    "accessibility": [
+      {
+        "requirement": "Keyboard navigation",
+        "priority": "P1 - High",
+        "wcag": "2.1 Level AA"
+      },
+      {
+        "requirement": "Screen reader support",
+        "priority": "P2 - Medium",
+        "implementation": "ARIA labels"
+      },
+      {
+        "requirement": "Color contrast",
+        "priority": "P1 - High",
+        "ratio": "4.5:1 minimum"
+      }
+    ]
+  },
+  "constraints": {
+    "technical": [
+      {
+        "constraint": "Supabase free tier limits",
+        "limit": "500MB database, 2GB bandwidth",
+        "mitigation": "Efficient data storage, caching"
+      },
+      {
+        "constraint": "Vercel function timeout",
+        "limit": "10 seconds max execution",
+        "mitigation": "Optimize IRV algorithm"
+      },
+      {
+        "constraint": "TMDB API rate limit",
+        "limit": "40 requests per 10 seconds",
+        "mitigation": "Client-side caching, debouncing"
+      }
+    ],
+    "business": [
+      {
+        "constraint": "No user accounts",
+        "rationale": "Reduce friction for participation",
+        "implication": "Session-based tracking only"
+      },
+      {
+        "constraint": "Free to use",
+        "rationale": "Accessible to everyone",
+        "implication": "Must work within free tier limits"
+      }
+    ]
+  },
+  "tie_breaking": {
+    "irv_elimination": {
+      "rule": "When multiple movies tied for elimination, eliminate all",
+      "rationale": "Fair and speeds up resolution"
+    },
+    "final_winner": {
+      "rule": "If all remaining movies tied, first by database ID wins",
+      "rationale": "Deterministic and predictable"
+    },
+    "display_order": {
+      "rule": "Tied movies shown in alphabetical order",
+      "rationale": "Consistent user experience"
+    }
+  }
+}

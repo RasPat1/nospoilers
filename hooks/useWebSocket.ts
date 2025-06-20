@@ -26,6 +26,7 @@ export function useWebSocket(
       }
 
       const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001'
+      console.log('Attempting WebSocket connection to:', wsUrl)
       const ws = new WebSocket(wsUrl)
       wsRef.current = ws
 
@@ -90,11 +91,11 @@ export function useWebSocket(
           clearInterval(pingIntervalRef.current)
         }
         
-        // Attempt to reconnect after 3 seconds
+        // Attempt to reconnect after 30 seconds
         reconnectTimeoutRef.current = setTimeout(() => {
           console.log('Attempting to reconnect...')
           connect()
-        }, 3000)
+        }, 30000)
       }
     } catch (error) {
       console.error('Error creating WebSocket:', error)

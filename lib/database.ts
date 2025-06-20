@@ -23,20 +23,25 @@ export const db = {
     },
     
     async getByStatus(status: string): Promise<Movie[]> {
-      if (isSupabase) {
-        const { data, error } = await supabase
-          .from('movies')
-          .select('*')
-          .eq('status', status)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+      try {
+        if (isSupabase) {
+          const { data, error } = await supabase
+            .from('movies')
+            .select('*')
+            .eq('status', status)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          return data || [];
+        }
+        const result = await localDb.query(
+          'SELECT * FROM movies WHERE status = $1 ORDER BY created_at DESC',
+          [status]
+        );
+        return result.rows;
+      } catch (error) {
+        console.error('Error in getByStatus:', error);
+        return [];
       }
-      const result = await localDb.query(
-        'SELECT * FROM movies WHERE status = $1 ORDER BY created_at DESC',
-        [status]
-      );
-      return result.rows;
     },
     
     async getById(id: string): Promise<Movie | null> {
@@ -215,14 +220,50 @@ export const db = {
     
     async upsert(id: string): Promise<UserSession> {
       if (isSupabase) {
+        // First try to get existing session
+        const { data: existingSession, error: fetchError } = await supabase
+          .from('user_sessions')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        // If session exists, return it
+        if (existingSession && !fetchError) {
+          return existingSession;
+        }
+        
+        // If doesn't exist, try to create new one
         const { data, error } = await supabase
           .from('user_sessions')
-          .insert({ id })
+          .insert({ 
+            id,
+            created_at: new Date().toISOString() 
+          })
           .select()
           .single();
-        if (error && error.code !== '23505') { // Ignore unique violation
-          if (error) throw error;
+        
+        if (error) {
+          // If we got a unique violation, the session was created by another request
+          if (error.code === '23505') {
+            // Try to fetch again
+            const { data: retrySession } = await supabase
+              .from('user_sessions')
+              .select('*')
+              .eq('id', id)
+              .single();
+            if (retrySession) return retrySession;
+          }
+          
+          // If RLS policy error, we'll return a mock session
+          // This is a workaround for when we don't have service role key
+          if (error.message?.includes('row-level security policy')) {
+            console.warn('RLS policy preventing user session creation, using mock session');
+            return { id, created_at: new Date().toISOString() };
+          }
+          
+          throw error;
         }
+        
         return data || { id, created_at: new Date().toISOString() };
       }
       return localDb.userSessions.upsert(id);

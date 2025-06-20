@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/database'
 
 // Ranked Choice Voting (Instant Runoff) Algorithm
 function calculateRankedChoiceWinner(votes: any[], movieIds: string[]): string | null {
@@ -52,66 +52,58 @@ function calculateRankedChoiceWinner(votes: any[], movieIds: string[]): string |
 }
 
 export async function POST(request: NextRequest) {
-  // Get current open voting session for this environment
-  const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-  
-  const { data: votingSession } = await supabase
-    .from('voting_sessions')
-    .select('*')
-    .eq('status', 'open')
-    .eq('environment', environment)
-    .single()
+  try {
+    // Get current open voting session for this environment
+    const environment = process.env.NODE_ENV === 'production' ? 'production' : 'development'
+    
+    const votingSession = await db.votingSession.getCurrent(environment)
 
-  if (!votingSession) {
-    return NextResponse.json({ error: 'No open voting session' }, { status: 400 })
-  }
+    if (!votingSession) {
+      return NextResponse.json({ error: 'No open voting session' }, { status: 400 })
+    }
 
-  // Get all votes for this session
-  const { data: votes, error: votesError } = await supabase
-    .from('votes')
-    .select('*')
-    .eq('voting_session_id', votingSession.id)
+    // Get all votes for this session
+    const votes = await db.votes.getBySession(votingSession.id)
 
-  if (votesError) {
-    return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 })
-  }
+    // Get all candidate movies
+    const movies = await db.movies.getAll()
 
-  // Get all candidate movies
-  const { data: movies } = await supabase
-    .from('movies')
-    .select('*')
-    .eq('status', 'candidate')
-
-  if (!movies || movies.length === 0) {
-    return NextResponse.json({ error: 'No movies to vote on' }, { status: 400 })
-  }
+    if (!movies || movies.length === 0) {
+      return NextResponse.json({ error: 'No movies to vote on' }, { status: 400 })
+    }
 
   const movieIds = movies.map(m => m.id)
   
   // Calculate winner using ranked choice voting
   const winnerId = calculateRankedChoiceWinner(votes || [], movieIds)
 
-  // Update voting session with winner and close it
-  const { error: updateError } = await supabase
-    .from('voting_sessions')
-    .update({
-      status: 'closed',
-      winner_movie_id: winnerId,
-      closed_at: new Date().toISOString()
-    })
-    .eq('id', votingSession.id)
+    // Update voting session with winner and close it
+    await db.votingSession.close(votingSession.id, winnerId)
 
-  if (updateError) {
+    // Update winner movie status to 'watched'
+    if (winnerId) {
+      // Need to use raw supabase for status update as abstraction doesn't have update method
+      const isSupabase = process.env.DATABASE_TYPE === 'supabase' || 
+                         (!process.env.USE_LOCAL_DB && process.env.NODE_ENV === 'production');
+      
+      if (isSupabase) {
+        const { supabase } = await import('@/lib/supabase')
+        await supabase
+          .from('movies')
+          .update({ status: 'watched' })
+          .eq('id', winnerId)
+      } else {
+        // For local database, use raw query
+        await db.query(
+          'UPDATE movies SET status = $1 WHERE id = $2',
+          ['watched', winnerId]
+        )
+      }
+    }
+
+    return NextResponse.json({ success: true, winnerId })
+  } catch (error) {
+    console.error('Error closing voting session:', error)
     return NextResponse.json({ error: 'Failed to close voting session' }, { status: 500 })
   }
-
-  // Update winner movie status to 'watched'
-  if (winnerId) {
-    await supabase
-      .from('movies')
-      .update({ status: 'watched' })
-      .eq('id', winnerId)
-  }
-
-  return NextResponse.json({ success: true, winnerId })
 }

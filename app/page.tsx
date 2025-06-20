@@ -1,13 +1,37 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Film, Users, Trophy, Vote, ArrowRight, Check, Play, Star } from 'lucide-react'
+import { Film, Users, Trophy, Vote, ArrowRight, Check, Play, Star, Pause } from 'lucide-react'
+import DemoVideoGallery from '@/components/DemoVideoGallery'
 
 export default function LandingPage() {
   const router = useRouter()
   const [currentFeature, setCurrentFeature] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [videoError, setVideoError] = useState(false)
+  const mainVideoRef = useRef<HTMLVideoElement>(null)
+  
+  const toggleMainVideo = async () => {
+    if (!mainVideoRef.current) return
+    
+    try {
+      if (isPlaying) {
+        mainVideoRef.current.pause()
+        setIsPlaying(false)
+      } else {
+        // Play returns a promise that may reject if autoplay is blocked
+        await mainVideoRef.current.play()
+        setIsPlaying(true)
+      }
+    } catch (error) {
+      console.error('Video playback error:', error)
+      // If autoplay fails, we might need user interaction
+      // Keep the play button visible
+      setIsPlaying(false)
+    }
+  }
 
   const features = [
     {
@@ -71,7 +95,14 @@ export default function LandingPage() {
               <ArrowRight className="w-5 h-5" />
             </button>
             <button
-              onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={async () => {
+                mainVideoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(async () => {
+                  if (mainVideoRef.current && !isPlaying) {
+                    await toggleMainVideo();
+                  }
+                }, 500);
+              }}
               className="px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 transition-all"
             >
               <Play className="w-5 h-5" />
@@ -79,35 +110,47 @@ export default function LandingPage() {
             </button>
           </div>
 
-          {/* App Preview */}
+          {/* Demo Video */}
           <div className="relative max-w-4xl mx-auto">
-            <div className="aspect-video bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <div className="bg-white dark:bg-neutral-900 rounded-lg p-8 shadow-xl max-w-md w-full mx-4">
-                  <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                    Tonight&apos;s Movie Poll
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-success-50 dark:bg-success-950 rounded-lg border-2 border-success-500">
-                      <span className="text-2xl font-bold text-success-600 dark:text-success-400">1</span>
-                      <div>
-                        <p className="font-semibold text-neutral-900 dark:text-neutral-100">Inception</p>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">2010 • 8.8⭐</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
-                      <span className="text-2xl font-bold text-neutral-400">2</span>
-                      <div>
-                        <p className="font-semibold text-neutral-900 dark:text-neutral-100">The Matrix</p>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">1999 • 8.7⭐</p>
-                      </div>
-                    </div>
+            <div className="aspect-video bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden">
+              {videoError ? (
+                <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary-500 to-primary-700">
+                  <div className="text-center">
+                    <Play className="w-16 h-16 text-white/80 mx-auto mb-4" />
+                    <p className="text-white/80">
+                      Demo video coming soon
+                    </p>
                   </div>
-                  <button className="w-full mt-6 py-3 bg-success-600 text-white rounded-lg font-semibold">
-                    Submit Rankings
-                  </button>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <video
+                    ref={mainVideoRef}
+                    className="w-full h-full object-contain"
+                    poster="/demo-thumbnails/main-demo.jpg"
+                    onError={() => setVideoError(true)}
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    onEnded={() => setIsPlaying(false)}
+                    controls={false}
+                    playsInline
+                    muted
+                  >
+                    <source src="/videos/nospoilers_complete_demo.mp4" type="video/mp4" />
+                    <source src="/videos/nospoilers_complete_demo.webm" type="video/webm" />
+                  </video>
+                  <button
+                    onClick={toggleMainVideo}
+                    className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors group"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-20 h-20 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    ) : (
+                      <Play className="w-20 h-20 text-white" />
+                    )}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -194,13 +237,18 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Video Demo Placeholder */}
-            <div className="bg-neutral-100 dark:bg-neutral-800 aspect-video flex items-center justify-center">
-              <div className="text-center">
-                <Play className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  Interactive demo coming soon
-                </p>
+            {/* Interactive Demo Preview */}
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl p-8">
+              <div className="aspect-video bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <Film className="w-16 h-16 text-white/80 mx-auto mb-4" />
+                  <p className="text-xl text-white font-semibold mb-2">
+                    See the Demo Above
+                  </p>
+                  <p className="text-white/80">
+                    Watch how NoSpoilers makes movie night decisions easy
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -281,6 +329,20 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Demo Scene Gallery Section */}
+      <section className="px-4 py-20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-neutral-900 dark:text-neutral-100 mb-4">
+            Feature Walkthrough
+          </h2>
+          <p className="text-xl text-center text-neutral-600 dark:text-neutral-400 mb-12 max-w-3xl mx-auto">
+            Explore each feature in detail with our scene-by-scene demos
+          </p>
+          
+          <DemoVideoGallery />
         </div>
       </section>
 

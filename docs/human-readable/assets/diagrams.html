@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NoSpoilers Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .diagram-container { margin: 30px 0; padding: 20px; border: 1px solid #ddd; }
+      h2 { color: #333; }
+      .mermaid { background: white; }
+    </style>
+</head>
+<body>
+<h1>NoSpoilers Architecture Diagrams</h1>
+
+<div class="diagram-container">
+  <h2>user-flow-flow_first_time</h2>
+  <div class="mermaid" id="user-flow-flow_first_time-1">
+flowchart TD
+    step1["Land on Homepage"]
+    step1 --> decision0{Ready to start voting?}
+    decision0 -->|Yes| step2a
+    decision0 -->|Watch Demo| step2b
+    decision0 -->|Learn More| step2c
+    step2a["Navigate to Voting"]
+    step1 --> step2a
+    step2b["Watch Demo Video"]
+    step2a --> step2b
+    step2c["Scroll for Information"]
+    step2b --> step2c
+    step3["Add Movies"]
+    step2c --> step3
+    step4["Rank Movies"]
+    step3 --> step4
+    step5["Submit Vote"]
+    step4 --> step5
+    step5 --> outcome60[success]
+    outcome60 --> step6
+    step5 --> outcome61[error]
+    outcome61 --> step4
+    step6["View Results"]
+    step5 --> step6
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>user-flow-flow_returning</h2>
+  <div class="mermaid" id="user-flow-flow_returning-2">
+flowchart TD
+    step1["Visit Site"]
+    step2["Navigate to Voting"]
+    step1 --> step2
+    step2 --> outcome10[undefined]
+    outcome10 --> step3
+    step2 --> outcome11[undefined]
+    outcome11 --> flowfirsttime.step3
+    step3["View Results"]
+    step2 --> step3
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>user-flow-flow_suggester</h2>
+  <div class="mermaid" id="user-flow-flow_suggester-3">
+flowchart TD
+    step1["Access Voting Page"]
+    step2["Add Movies Only"]
+    step1 --> step2
+    step2 --> decision1{Ready to vote?}
+    decision1 -->|Yes| flowfirsttime.step4
+    decision1 -->|No| step3
+    step3["Leave Without Voting"]
+    step2 --> step3
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>user-flow-flow_admin</h2>
+  <div class="mermaid" id="user-flow-flow_admin-4">
+flowchart TD
+    step1["Access Admin Panel"]
+    step2["Authenticate"]
+    step1 --> step2
+    step2 --> outcome10[success]
+    outcome10 --> step3
+    step2 --> outcome11[failure]
+    step3["View Dashboard"]
+    step2 --> step3
+    step4["Manage Session"]
+    step3 --> step4
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>user-flow-flow_mobile</h2>
+  <div class="mermaid" id="user-flow-flow_mobile-5">
+flowchart TD
+    step1["Mobile Homepage"]
+    step2["Mobile Voting"]
+    step1 --> step2
+    step3["Mobile Results"]
+    step2 --> step3
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>frontend-architecture</h2>
+  <div class="mermaid" id="frontend-architecture-6">
+graph TB
+    subgraph "Pages"
+        HomePage[HomePage /]
+        VotePage[VotePage /vote]
+        ResultsPage[ResultsPage /results]
+        AdminPage[AdminPage /admin]
+    end
+    
+    subgraph "Components"
+        VotingInterface[VotingInterface]
+        MovieSearch[MovieSearch]
+        Results[Results]
+    end
+    
+    subgraph "Hooks"
+        WebSocket[useWebSocket]
+    end
+    
+    HomePage --> DemoVideo[DemoVideoGallery]
+    VotePage --> VotingInterface
+    VotingInterface --> MovieSearch
+    ResultsPage --> Results
+    Results --> WebSocket
+    VotingInterface --> WebSocket
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>data-flow-flow_add_movie</h2>
+  <div class="mermaid" id="data-flow-flow_add_movie-7">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Database
+    participant External
+
+    User->>Frontend: Input text in search box
+    Frontend->>API: Debounced API call
+    API->>External: TMDB API request (TMDB)
+    User->>Frontend: Display autocomplete
+    User->>Frontend: Update UI
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>data-flow-flow_submit_vote</h2>
+  <div class="mermaid" id="data-flow-flow_submit_vote-8">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Database
+    participant External
+
+    User->>Frontend: Validate rankings
+    API->>Database: Check existing vote
+    API->>Database: Create user session
+    API->>Database: Store vote
+    API-->>Frontend: Broadcast event (WebSocket)
+    Frontend->>User: Redirect to results
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>data-flow-flow_real_time_updates</h2>
+  <div class="mermaid" id="data-flow-flow_real_time_updates-9">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Database
+    participant External
+
+    User->>Frontend: Trigger refresh
+    Frontend->>API: Fetch latest data
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>data-flow-flow_calculate_winner</h2>
+  <div class="mermaid" id="data-flow-flow_calculate_winner-10">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Database
+    participant External
+
+    User->>Frontend: GET /api/votes/results
+    API->>Database: Fetch all votes
+    User->>Frontend: Display results
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>database-schema</h2>
+  <div class="mermaid" id="database-schema-11">
+erDiagram
+    movies {
+        string id
+        string title
+        string tmdb_id
+        string poster_path
+        string vote_average
+        string director
+        string actors
+        string plot
+    }
+    voting_sessions {
+        string id
+        string status
+        string winner_movie_id
+        string created_at
+        string closed_at
+        string environment
+    }
+    user_sessions {
+        string id
+        string created_at
+    }
+    votes {
+        string id
+        string voting_session_id
+        string user_session_id
+        string rankings
+        string created_at
+    }
+    voting_sessions ||--o{ movies : "winner_movie_id"
+    votes ||--o{ voting_sessions : "voting_session_id"
+    votes ||--o{ user_sessions : "user_session_id"
+
+  </div>
+</div>
+
+<div class="diagram-container">
+  <h2>algorithm-algo_irv</h2>
+  <div class="mermaid" id="algorithm-algo_irv-12">
+flowchart TD
+    step1["Step 1: Count first-choice votes for each movie"]
+    step2["Step 2: Check if any movie has > 50% of votes"]
+    step1 --> step2
+    step2 --> decision2{If yes, declare winner. If no, continue.}
+    decision2 -->|Yes| winner[Declare Winner]
+    decision2 -->|No| step3
+    step3["Step 3: Eliminate movie with fewest first-choice votes"]
+    step2 --> step3
+    step4["Step 4: Redistribute votes from eliminated movie(s) to next choices"]
+    step3 --> step4
+    step5["Step 5: Repeat from step 2 until winner found"]
+    step4 --> step5
+
+  </div>
+</div>
+
+<script>
+  // Export diagrams as SVG (manual process - open in browser and save)
+  window.addEventListener('load', function() {
+    document.querySelectorAll('.mermaid').forEach(function(element) {
+      console.log('Diagram ' + element.id + ' rendered');
+    });
+  });
+</script>
+</body>
+</html>

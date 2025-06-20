@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { db } from '@/lib/database'
 
 export async function GET() {
   try {
@@ -13,18 +9,10 @@ export async function GET() {
     console.log('Fetching results for environment:', environment)
     
     // Get the most recent open voting session for this environment
-    const { data: votingSessions, error: sessionError } = await supabase
-      .from('voting_sessions')
-      .select('*')
-      .eq('status', 'open')
-      .eq('environment', environment)
-      .order('created_at', { ascending: false })
-      .limit(1)
+    const votingSession = await db.votingSession.getCurrent(environment)
     
-    const votingSession = votingSessions && votingSessions.length > 0 ? votingSessions[0] : null
-    
-    if (sessionError || !votingSession) {
-      console.log('No active voting session found:', sessionError?.message)
+    if (!votingSession) {
+      console.log('No active voting session found')
       return NextResponse.json({
         rankings: {},
         totalVotes: 0
@@ -34,15 +22,7 @@ export async function GET() {
     console.log('Found voting session:', votingSession.id)
     
     // Get all votes for current session
-    const { data: votes, error: votesError } = await supabase
-      .from('votes')
-      .select('rankings')
-      .eq('voting_session_id', votingSession.id)
-    
-    if (votesError) {
-      console.error('Error fetching votes:', votesError)
-      throw votesError
-    }
+    const votes = await db.votes.getBySession(votingSession.id)
     
     console.log(`Found ${votes?.length || 0} votes for session ${votingSession.id}`)
 
