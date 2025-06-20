@@ -6,6 +6,8 @@ import { Movie, VotingSession } from '@/lib/types'
 import Image from 'next/image'
 import { Trophy, Users, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function ResultsPage() {
   const [votingSession, setVotingSession] = useState<VotingSession | null>(null)
   const [movies, setMovies] = useState<Movie[]>([])

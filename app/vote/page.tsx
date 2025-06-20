@@ -8,6 +8,8 @@ import Results from '@/components/Results'
 import { Movie, VotingSession } from '@/lib/types'
 import { useWebSocket } from '@/hooks/useWebSocket'
 
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([])
   const [newMovieTitle, setNewMovieTitle] = useState('')
