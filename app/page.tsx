@@ -9,29 +9,6 @@ import DemoVideoGallery from '@/components/DemoVideoGallery'
 export default function LandingPage() {
   const router = useRouter()
   const [currentFeature, setCurrentFeature] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [videoError, setVideoError] = useState(false)
-  const mainVideoRef = useRef<HTMLVideoElement>(null)
-  
-  const toggleMainVideo = async () => {
-    if (!mainVideoRef.current) return
-    
-    try {
-      if (isPlaying) {
-        mainVideoRef.current.pause()
-        setIsPlaying(false)
-      } else {
-        // Play returns a promise that may reject if autoplay is blocked
-        await mainVideoRef.current.play()
-        setIsPlaying(true)
-      }
-    } catch (error) {
-      console.error('Video playback error:', error)
-      // If autoplay fails, we might need user interaction
-      // Keep the play button visible
-      setIsPlaying(false)
-    }
-  }
 
   const features = [
     {
@@ -95,13 +72,8 @@ export default function LandingPage() {
               <ArrowRight className="w-5 h-5" />
             </button>
             <button
-              onClick={async () => {
-                mainVideoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(async () => {
-                  if (mainVideoRef.current && !isPlaying) {
-                    await toggleMainVideo();
-                  }
-                }, 500);
+              onClick={() => {
+                document.querySelector('video')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }}
               className="px-8 py-4 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 border border-neutral-300 dark:border-neutral-600 transition-all"
             >
@@ -111,122 +83,58 @@ export default function LandingPage() {
           </div>
 
           {/* Demo Video */}
-          <div className="relative max-w-4xl mx-auto">
-            <div className="aspect-video bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden">
-              {videoError ? (
-                <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary-500 to-primary-700">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-white/80 mx-auto mb-4" />
-                    <p className="text-white/80">
-                      Demo video coming soon
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <video
-                    ref={mainVideoRef}
-                    className="w-full h-full object-contain"
-                    poster="/demo-thumbnails/main-demo.jpg"
-                    onError={() => setVideoError(true)}
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                    onEnded={() => setIsPlaying(false)}
-                    controls={false}
-                    playsInline
-                    muted
-                  >
-                    <source src="/videos/comprehensive_4user_demo.mp4" type="video/mp4" />
-                    <source src="/videos/complete_4user_demo.mp4" type="video/mp4" />
-                    <source src="/demo.mp4" type="video/mp4" />
-                  </video>
-                  <button
-                    onClick={toggleMainVideo}
-                    className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors group"
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-20 h-20 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    ) : (
-                      <Play className="w-20 h-20 text-white" />
-                    )}
-                  </button>
-                </>
-              )}
-            </div>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-4">
-              Watch 4 users collaborate in real-time to choose a movie
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 4-User Demo Section */}
-      <section className="px-4 py-20 bg-primary-50 dark:bg-primary-950/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 dark:bg-primary-900/30 rounded-full text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
-              <Users className="w-4 h-4" />
-              Real-time Collaboration
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-              See How 4 Friends Choose a Movie Together
-            </h2>
-            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
-              Watch Alex, Sam, Jordan, and Casey add movies, vote with ranked choices, and see instant results
-            </p>
-          </div>
-          
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden p-8">
-            <div className="aspect-video bg-neutral-900 rounded-lg overflow-hidden">
+          <div className="relative max-w-6xl mx-auto">
+            <div className="bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden">
               <video
-                className="w-full h-full object-cover"
+                className="w-full h-auto"
                 controls
                 playsInline
                 muted
                 poster="/demo-thumbnails/4user-demo.jpg"
               >
+                <source src="/videos/horizontal_4user_demo.mp4" type="video/mp4" />
                 <source src="/videos/comprehensive_4user_demo.mp4" type="video/mp4" />
                 <source src="/videos/complete_4user_demo.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
-            
-            <div className="grid md:grid-cols-4 gap-6 mt-8">
+            <div className="grid md:grid-cols-4 gap-4 mt-6 px-4">
               <div className="text-center">
-                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="font-bold text-red-600 dark:text-red-400">A</span>
+                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="font-bold text-red-600 dark:text-red-400 text-sm">A</span>
                 </div>
-                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Alex</h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Action movies</p>
+                <h4 className="font-semibold text-sm text-neutral-900 dark:text-neutral-100">Alex</h4>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Votes first</p>
               </div>
-              
               <div className="text-center">
-                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="font-bold text-teal-600 dark:text-teal-400">S</span>
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="font-bold text-teal-600 dark:text-teal-400 text-sm">S</span>
                 </div>
-                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Sam</h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Rom-coms</p>
+                <h4 className="font-semibold text-sm text-neutral-900 dark:text-neutral-100">Sam</h4>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Adds movies</p>
               </div>
-              
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="font-bold text-blue-600 dark:text-blue-400">J</span>
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">J</span>
                 </div>
-                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Jordan</h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Sci-fi</p>
+                <h4 className="font-semibold text-sm text-neutral-900 dark:text-neutral-100">Jordan</h4>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Ranked voting</p>
               </div>
-              
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="font-bold text-green-600 dark:text-green-400">C</span>
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span className="font-bold text-green-600 dark:text-green-400 text-sm">C</span>
                 </div>
-                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Casey</h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Art films</p>
+                <h4 className="font-semibold text-sm text-neutral-900 dark:text-neutral-100">Casey</h4>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Votes last</p>
               </div>
             </div>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-4">
+              See WebSocket sync, real-time voting updates, and IRV elimination rounds
+            </p>
           </div>
         </div>
       </section>
+
 
       {/* Features Grid */}
       <section className="px-4 py-20 bg-white dark:bg-neutral-900">
