@@ -82,8 +82,8 @@ describe('/api/votes/results', () => {
     expect(data.rankings).toBeDefined()
     expect(data.totalVotes).toBe(3)
     expect(data.winner).toBeDefined()
-    // Movie A should have more points than Movie C
-    expect(data.rankings['movie-a']).toBeGreaterThan(data.rankings['movie-c'])
+    // Movie A should have a better ranking (lower number) than Movie C
+    expect(data.rankings['movie-a']).toBeLessThan(data.rankings['movie-c'])
   })
 
   it('should return empty results when no voting session exists', async () => {

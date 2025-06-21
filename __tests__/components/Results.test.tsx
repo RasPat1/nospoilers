@@ -50,11 +50,18 @@ describe('Results Page', () => {
           ok: true,
           json: () => Promise.resolve({
             rankings: {
-              '1': 10, // Movie A has 10 points
-              '2': 8,  // Movie B has 8 points
-              '3': 5   // Movie C has 5 points
+              '1': 1, // Movie A is ranked 1st
+              '2': 2, // Movie B is ranked 2nd
+              '3': 3  // Movie C is ranked 3rd
             },
-            totalVotes: 5
+            firstChoiceVotes: {
+              '1': 3, // Movie A has 3 first-choice votes
+              '2': 1, // Movie B has 1 first-choice vote
+              '3': 1  // Movie C has 1 first-choice vote
+            },
+            totalVotes: 5,
+            winner: null,
+            eliminationRounds: []
           })
         })
       }
@@ -76,15 +83,16 @@ describe('Results Page', () => {
     expect(screen.getByText('Total Votes:')).toBeInTheDocument()
     expect(screen.getByText('5')).toBeInTheDocument()
 
-    // Check rankings display
+    // Check rankings display with first-choice votes
     expect(screen.getByText('Movie A')).toBeInTheDocument()
-    expect(screen.getByText('10 points')).toBeInTheDocument()
+    expect(screen.getByText(/3 first-choice vote/)).toBeInTheDocument()
     
     expect(screen.getByText('Movie B')).toBeInTheDocument()
-    expect(screen.getByText('8 points')).toBeInTheDocument()
-    
     expect(screen.getByText('Movie C')).toBeInTheDocument()
-    expect(screen.getByText('5 points')).toBeInTheDocument()
+    
+    // Both B and C have 1 first-choice vote
+    const oneVoteElements = screen.getAllByText(/1 first-choice vote/)
+    expect(oneVoteElements).toHaveLength(2)
 
     // Voting should show as open
     expect(screen.getByText('Voting Open')).toBeInTheDocument()

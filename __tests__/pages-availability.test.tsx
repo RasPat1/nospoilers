@@ -220,9 +220,9 @@ describe('Page Availability and Error Tests', () => {
         expect(screen.getByText('Final Results')).toBeInTheDocument()
       })
       
-      // Should display movies without errors
-      expect(screen.getByText('Winner Movie')).toBeInTheDocument()
-      expect(screen.getByText('Runner Up')).toBeInTheDocument()
+      // Should display movies without errors - check for vote display
+      expect(screen.getByText(/5 first-choice vote/)).toBeInTheDocument()
+      expect(screen.getByText(/3 first-choice vote/)).toBeInTheDocument()
     })
 
     it('should display first-choice votes instead of points', async () => {
@@ -279,7 +279,9 @@ describe('Page Availability and Error Tests', () => {
 
     it('should show login form initially', () => {
       render(<AdminPage />)
-      expect(screen.getByPlaceholderText('Enter admin password')).toBeInTheDocument()
+      expect(screen.getByText('Username')).toBeInTheDocument()
+      expect(screen.getByText('Password')).toBeInTheDocument()
+      expect(screen.getByText('Login')).toBeInTheDocument()
     })
   })
 
