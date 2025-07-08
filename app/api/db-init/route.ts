@@ -3,15 +3,43 @@ import { db } from '@/lib/database';
 
 export async function GET() {
   try {
+    // Debug: Check what environment variables we have
+    const hasPostgresUrl = !!process.env.POSTGRES_URL;
+    const databaseType = process.env.DATABASE_TYPE;
+    
+    console.log('Database init check:', {
+      hasPostgresUrl,
+      databaseType,
+      nodeEnv: process.env.NODE_ENV
+    });
+    
     // Check if we're using Postgres (Vercel or Neon)
-    if (process.env.POSTGRES_URL || process.env.DATABASE_TYPE === 'vercel') {
+    if (hasPostgresUrl || databaseType === 'vercel') {
       await db.init();
       return NextResponse.json({ 
         message: 'Database initialized successfully',
-        database: process.env.DATABASE_TYPE || 'postgres'
+        database: databaseType || 'postgres',
+        provider: hasPostgresUrl ? 'Neon/Vercel' : 'configured'
       });
     }
-    return NextResponse.json({ message: 'Database initialization only needed for Postgres databases' });
+    
+    // Force initialization if we're in production (temporary fix)
+    if (process.env.NODE_ENV === 'production') {
+      await db.init();
+      return NextResponse.json({ 
+        message: 'Database initialized successfully (production override)',
+        database: 'postgres'
+      });
+    }
+    
+    return NextResponse.json({ 
+      message: 'Database initialization only needed for Postgres databases',
+      debug: {
+        hasPostgresUrl,
+        databaseType,
+        nodeEnv: process.env.NODE_ENV
+      }
+    });
   } catch (error: any) {
     console.error('Database initialization error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
