@@ -9,7 +9,7 @@ export const vercelDb = {
         WHERE status = 'candidate' 
         ORDER BY created_at DESC
       `;
-      return rows;
+      return rows as Movie[];
     },
     
     async getByStatus(status: string): Promise<Movie[]> {
@@ -18,7 +18,7 @@ export const vercelDb = {
         WHERE status = ${status} 
         ORDER BY created_at DESC
       `;
-      return rows;
+      return rows as Movie[];
     },
     
     async getById(id: string): Promise<Movie | null> {
@@ -26,7 +26,7 @@ export const vercelDb = {
         SELECT * FROM movies 
         WHERE id = ${id}
       `;
-      return rows[0] || null;
+      return (rows[0] as Movie) || null;
     },
     
     async getByTmdbId(tmdbId: number, status: string = 'candidate'): Promise<Movie | null> {
@@ -35,7 +35,7 @@ export const vercelDb = {
         WHERE tmdb_id = ${tmdbId} 
         AND status = ${status}
       `;
-      return rows[0] || null;
+      return (rows[0] as Movie) || null;
     },
     
     async create(movieData: Partial<Movie>): Promise<Movie> {
@@ -54,7 +54,7 @@ export const vercelDb = {
       `;
       
       const { rows } = await sql.query(query, values);
-      return rows[0];
+      return rows[0] as Movie;
     },
     
     async delete(id: string): Promise<void> {
@@ -74,7 +74,7 @@ export const vercelDb = {
         AND environment = ${env}
         LIMIT 1
       `;
-      return rows[0] || null;
+      return (rows[0] as VotingSession) || null;
     },
     
     async getById(id: string): Promise<VotingSession | null> {
@@ -82,7 +82,7 @@ export const vercelDb = {
         SELECT * FROM voting_sessions 
         WHERE id = ${id}
       `;
-      return rows[0] || null;
+      return (rows[0] as VotingSession) || null;
     },
     
     async create(environment?: string): Promise<VotingSession> {
@@ -92,7 +92,7 @@ export const vercelDb = {
         VALUES ('open', ${env}) 
         RETURNING *
       `;
-      return rows[0];
+      return rows[0] as VotingSession;
     },
     
     async close(id: string, winnerMovieId: string | null): Promise<void> {
@@ -112,7 +112,7 @@ export const vercelDb = {
         SELECT * FROM user_sessions 
         WHERE id = ${id}
       `;
-      return rows[0] || null;
+      return (rows[0] as UserSession) || null;
     },
     
     async upsert(id: string): Promise<UserSession> {
@@ -123,18 +123,19 @@ export const vercelDb = {
         SET id = EXCLUDED.id
         RETURNING *
       `;
-      return rows[0];
+      return rows[0] as UserSession;
     },
   },
   
   votes: {
     async create(votingSessionId: string, userSessionId: string, rankings: string[]): Promise<Vote> {
-      const { rows } = await sql`
-        INSERT INTO votes (voting_session_id, user_session_id, rankings)
-        VALUES (${votingSessionId}, ${userSessionId}, ${rankings})
-        RETURNING *
-      `;
-      return rows[0];
+      // Convert array to PostgreSQL array format
+      const rankingsArray = `{${rankings.map(r => `"${r}"`).join(',')}}`;
+      const { rows } = await sql.query(
+        'INSERT INTO votes (voting_session_id, user_session_id, rankings) VALUES ($1, $2, $3) RETURNING *',
+        [votingSessionId, userSessionId, rankingsArray]
+      );
+      return rows[0] as Vote;
     },
     
     async getBySession(sessionId: string): Promise<Vote[]> {
@@ -142,7 +143,7 @@ export const vercelDb = {
         SELECT * FROM votes 
         WHERE voting_session_id = ${sessionId}
       `;
-      return rows;
+      return rows as Vote[];
     },
     
     async getByUserAndSession(userSessionId: string, votingSessionId: string): Promise<Vote | null> {
@@ -151,7 +152,7 @@ export const vercelDb = {
         WHERE voting_session_id = ${votingSessionId} 
         AND user_session_id = ${userSessionId}
       `;
-      return rows[0] || null;
+      return (rows[0] as Vote) || null;
     },
     
     async hasVoted(sessionId: string, userSessionId: string): Promise<boolean> {
