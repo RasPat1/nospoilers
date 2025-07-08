@@ -69,7 +69,23 @@ export const db = {
           .eq('tmdb_id', tmdbId)
           .eq('status', status)
           .single();
-        if (error && error.code !== 'PGRST116') return null;
+        
+        // PGRST116 means no rows found, which is expected behavior
+        if (error) {
+          if (error.code === 'PGRST116') {
+            return null;
+          }
+          // For other errors, throw to ensure they're properly handled
+          console.error('Error in getByTmdbId:', {
+            tmdbId,
+            status,
+            error: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          });
+          throw error;
+        }
         return data;
       }
       const result = await localDb.query(
