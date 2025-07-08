@@ -1,15 +1,23 @@
 import { supabase } from './supabase';
 import { localDb } from './database-local';
+import { vercelDb } from './database-vercel';
 import { Movie, VotingSession, UserSession } from '@/lib/types';
 
 // Determine which database to use based on environment
-const isSupabase = process.env.DATABASE_TYPE === 'supabase' || 
-                   (!process.env.USE_LOCAL_DB && process.env.NODE_ENV === 'production');
+const databaseType = process.env.DATABASE_TYPE || 
+                    (process.env.POSTGRES_URL ? 'vercel' : 
+                     process.env.NODE_ENV === 'production' ? 'supabase' : 'local');
+
+const isSupabase = databaseType === 'supabase';
+const isVercel = databaseType === 'vercel';
 
 // Create a unified database interface
 export const db = {
   movies: {
     async getAll(): Promise<Movie[]> {
+      if (isVercel) {
+        return vercelDb.movies.getAll();
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('movies')
@@ -24,6 +32,9 @@ export const db = {
     
     async getByStatus(status: string): Promise<Movie[]> {
       try {
+        if (isVercel) {
+          return vercelDb.movies.getByStatus(status);
+        }
         if (isSupabase) {
           const { data, error } = await supabase
             .from('movies')
@@ -45,6 +56,9 @@ export const db = {
     },
     
     async getById(id: string): Promise<Movie | null> {
+      if (isVercel) {
+        return vercelDb.movies.getById(id);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('movies')
@@ -62,6 +76,9 @@ export const db = {
     },
     
     async getByTmdbId(tmdbId: number, status: string = 'candidate'): Promise<Movie | null> {
+      if (isVercel) {
+        return vercelDb.movies.getByTmdbId(tmdbId, status);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('movies')
@@ -96,6 +113,9 @@ export const db = {
     },
     
     async create(movieData: Partial<Movie>): Promise<Movie> {
+      if (isVercel) {
+        return vercelDb.movies.create(movieData);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('movies')
@@ -122,6 +142,9 @@ export const db = {
     },
     
     async delete(id: string): Promise<void> {
+      if (isVercel) {
+        return vercelDb.movies.delete(id);
+      }
       if (isSupabase) {
         const { error } = await supabase
           .from('movies')
@@ -138,6 +161,9 @@ export const db = {
     async getCurrent(environment?: string): Promise<VotingSession | null> {
       const env = environment || process.env.NODE_ENV || 'development';
       
+      if (isVercel) {
+        return vercelDb.votingSession.getCurrent(environment);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('voting_sessions')
@@ -157,6 +183,9 @@ export const db = {
     },
     
     async getById(id: string): Promise<VotingSession | null> {
+      if (isVercel) {
+        return vercelDb.votingSession.getById(id);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('voting_sessions')
@@ -177,6 +206,9 @@ export const db = {
     async create(environment?: string): Promise<VotingSession> {
       const env = environment || process.env.NODE_ENV || 'development';
       
+      if (isVercel) {
+        return vercelDb.votingSession.create(environment);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('voting_sessions')
@@ -199,6 +231,9 @@ export const db = {
     },
     
     async close(id: string, winnerMovieId: string | null): Promise<void> {
+      if (isVercel) {
+        return vercelDb.votingSession.close(id, winnerMovieId);
+      }
       if (isSupabase) {
         const { error } = await supabase
           .from('voting_sessions')
@@ -217,6 +252,9 @@ export const db = {
   
   userSessions: {
     async get(id: string): Promise<UserSession | null> {
+      if (isVercel) {
+        return vercelDb.userSessions.get(id);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('user_sessions')
@@ -235,6 +273,9 @@ export const db = {
     },
     
     async upsert(id: string): Promise<UserSession> {
+      if (isVercel) {
+        return vercelDb.userSessions.upsert(id);
+      }
       if (isSupabase) {
         // For Supabase, try to insert directly and handle conflicts
         // This avoids the SELECT permission issue
@@ -281,6 +322,9 @@ export const db = {
   
   votes: {
     async create(votingSessionId: string, userSessionId: string, rankings: string[]): Promise<any> {
+      if (isVercel) {
+        return vercelDb.votes.create(votingSessionId, userSessionId, rankings);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('votes')
@@ -298,6 +342,9 @@ export const db = {
     },
     
     async getBySession(sessionId: string): Promise<any[]> {
+      if (isVercel) {
+        return vercelDb.votes.getBySession(sessionId);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('votes')
@@ -310,6 +357,9 @@ export const db = {
     },
     
     async getByUserAndSession(userSessionId: string, votingSessionId: string): Promise<any | null> {
+      if (isVercel) {
+        return vercelDb.votes.getByUserAndSession(userSessionId, votingSessionId);
+      }
       if (isSupabase) {
         const { data, error } = await supabase
           .from('votes')
@@ -329,6 +379,9 @@ export const db = {
     },
     
     async hasVoted(sessionId: string, userSessionId: string): Promise<boolean> {
+      if (isVercel) {
+        return vercelDb.votes.hasVoted(sessionId, userSessionId);
+      }
       if (isSupabase) {
         const { count, error } = await supabase
           .from('votes')
@@ -342,6 +395,9 @@ export const db = {
     },
     
     async delete(userSessionId: string, votingSessionId: string): Promise<void> {
+      if (isVercel) {
+        return vercelDb.votes.delete(userSessionId, votingSessionId);
+      }
       if (isSupabase) {
         const { error } = await supabase
           .from('votes')
@@ -358,6 +414,9 @@ export const db = {
     },
     
     async count(votingSessionId: string): Promise<number> {
+      if (isVercel) {
+        return vercelDb.votes.count(votingSessionId);
+      }
       if (isSupabase) {
         const { count, error } = await supabase
           .from('votes')
@@ -377,10 +436,17 @@ export const db = {
   
   // Add raw query capability for complex operations
   query: async (text: string, params?: any[]): Promise<any> => {
-    if (isSupabase) {
-      throw new Error('Raw queries not supported with Supabase. Use the Supabase client methods.');
+    if (isVercel || isSupabase) {
+      throw new Error('Raw queries not supported with Vercel/Supabase. Use the database client methods.');
     }
     return localDb.query(text, params);
+  },
+  
+  // Initialize database (for Vercel)
+  init: async () => {
+    if (isVercel) {
+      return vercelDb.init();
+    }
   }
 };
 

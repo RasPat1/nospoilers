@@ -19,7 +19,7 @@ The NoSpoilers demo system is built on Puppeteer with a sophisticated recording 
 ### Key Capabilities
 - **Multi-Browser Context**: Simulate up to 4+ concurrent users
 - **Screenshot-Based Recording**: Frame-by-frame capture for precise control
-- **Composite Views**: 2x2 grid, side-by-side, and custom layouts
+- **Composite Views**: side-by-side and custom layouts
 - **Annotation System**: Overlay explanatory text and arrows
 - **Click Visualization**: Red circles show user interactions
 - **Typing Animation**: Realistic slow typing for search inputs
@@ -36,7 +36,6 @@ The NoSpoilers demo system is built on Puppeteer with a sophisticated recording 
 ### 2. Multi-User Demos
 - **4-user-ranked-choice-demo.js**: Shows IRV algorithm in action
 - **mobile-demo-4-users-side-by-side.js**: Mobile viewport optimization
-- **mobile-demo-2x2-grid.js**: Grid layout for simultaneous viewing
 - **Purpose**: Demonstrate real-time collaboration and WebSocket sync
 
 ### 3. Specialized Demos

@@ -1,0 +1,418 @@
+2025-06-20T11:53:47: Error fetching voting session: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:53:47:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:53:47:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:53:47:     at async Object.getCurrent (webpack-internal:///(rsc)/./lib/database.ts:104:28)
+2025-06-20T11:53:47:     at async GET (webpack-internal:///(rsc)/./app/api/voting-session/route.ts:22:19)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:53:47:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:53:47:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:53:47:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:53:47:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:53:47:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:53:47:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:53:47:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:53:47:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:53:47:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:53:47:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:53:47:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:53:47:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:53:47:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:53:47:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:53:47:   code: 'ECONNREFUSED',
+2025-06-20T11:53:47:   [errors]: [
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '::1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     },
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '127.0.0.1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     }
+2025-06-20T11:53:47:   ]
+2025-06-20T11:53:47: }
+2025-06-20T11:53:47: Error in getByStatus: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:53:47:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:53:47:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:53:47:     at async Object.getByStatus (webpack-internal:///(rsc)/./lib/database.ts:37:32)
+2025-06-20T11:53:47:     at async GET (webpack-internal:///(rsc)/./app/api/movies/route.ts:17:24)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:53:47:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:53:47:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:53:47:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:53:47:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:53:47:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:53:47:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:53:47:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:53:47:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:53:47:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:53:47:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:53:47:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:53:47:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:53:47:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:53:47:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:53:47:   code: 'ECONNREFUSED',
+2025-06-20T11:53:47:   [errors]: [
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '::1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     },
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '127.0.0.1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     }
+2025-06-20T11:53:47:   ]
+2025-06-20T11:53:47: }
+2025-06-20T11:53:47: Error fetching voting session: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:53:47:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:53:47:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:53:47:     at async Object.getCurrent (webpack-internal:///(rsc)/./lib/database.ts:104:28)
+2025-06-20T11:53:47:     at async GET (webpack-internal:///(rsc)/./app/api/voting-session/route.ts:22:19)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:53:47:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:53:47:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:53:47:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:53:47:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:53:47:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:53:47:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:53:47:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:53:47:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:53:47:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:53:47:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:53:47:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:53:47:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:53:47:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:53:47:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:53:47:   code: 'ECONNREFUSED',
+2025-06-20T11:53:47:   [errors]: [
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '::1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     },
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '127.0.0.1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     }
+2025-06-20T11:53:47:   ]
+2025-06-20T11:53:47: }
+2025-06-20T11:53:47: Error in getByStatus: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:53:47:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:53:47:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:53:47:     at async Object.getByStatus (webpack-internal:///(rsc)/./lib/database.ts:37:32)
+2025-06-20T11:53:47:     at async GET (webpack-internal:///(rsc)/./app/api/movies/route.ts:17:24)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:53:47:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:53:47:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:53:47:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:53:47:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:53:47:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:53:47:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:53:47:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:53:47:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:53:47:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:53:47:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:53:47:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:53:47:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:53:47:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:53:47:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:53:47:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:53:47:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:53:47:   code: 'ECONNREFUSED',
+2025-06-20T11:53:47:   [errors]: [
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '::1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     },
+2025-06-20T11:53:47:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:53:47:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:47:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:47:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:47:       errno: -61,
+2025-06-20T11:53:47:       code: 'ECONNREFUSED',
+2025-06-20T11:53:47:       syscall: 'connect',
+2025-06-20T11:53:47:       address: '127.0.0.1',
+2025-06-20T11:53:47:       port: 5432
+2025-06-20T11:53:47:     }
+2025-06-20T11:53:47:   ]
+2025-06-20T11:53:47: }
+2025-06-20T11:53:52:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T11:53:52: Error checking for existing movie: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:53:52:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:53:52:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:53:52:     at async Object.getByTmdbId (webpack-internal:///(rsc)/./lib/database.ts:63:28)
+2025-06-20T11:53:52:     at async POST (webpack-internal:///(rsc)/./app/api/movies/route.ts:61:39)
+2025-06-20T11:53:52:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:53:52:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:53:52:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:53:52:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:53:52:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:53:52:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:53:52:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:53:52:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:53:52:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:53:52:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:53:52:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:53:52:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:53:52:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:53:52:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:53:52:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:53:52:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:53:52:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:53:52:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:53:52:   code: 'ECONNREFUSED',
+2025-06-20T11:53:52:   [errors]: [
+2025-06-20T11:53:52:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:53:52:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:52:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:52:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:52:       errno: -61,
+2025-06-20T11:53:52:       code: 'ECONNREFUSED',
+2025-06-20T11:53:52:       syscall: 'connect',
+2025-06-20T11:53:52:       address: '::1',
+2025-06-20T11:53:52:       port: 5432
+2025-06-20T11:53:52:     },
+2025-06-20T11:53:52:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:53:52:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:53:52:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:53:52:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:53:52:       errno: -61,
+2025-06-20T11:53:52:       code: 'ECONNREFUSED',
+2025-06-20T11:53:52:       syscall: 'connect',
+2025-06-20T11:53:52:       address: '127.0.0.1',
+2025-06-20T11:53:52:       port: 5432
+2025-06-20T11:53:52:     }
+2025-06-20T11:53:52:   ]
+2025-06-20T11:53:52: }
+2025-06-20T11:54:07: Error checking for existing movie: AggregateError [ECONNREFUSED]: 
+2025-06-20T11:54:07:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:54:07:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:54:07:     at async Object.getByTmdbId (webpack-internal:///(rsc)/./lib/database.ts:63:28)
+2025-06-20T11:54:07:     at async POST (webpack-internal:///(rsc)/./app/api/movies/route.ts:61:39)
+2025-06-20T11:54:07:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:54:07:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:54:07:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:54:07:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:54:07:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:54:07:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:54:07:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:54:07:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:54:07:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:54:07:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:54:07:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:54:07:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:54:07:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:54:07:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:54:07:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:54:07:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:54:07:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:54:07:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:54:07:   code: 'ECONNREFUSED',
+2025-06-20T11:54:07:   [errors]: [
+2025-06-20T11:54:07:     Error: connect ECONNREFUSED ::1:5432
+2025-06-20T11:54:07:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:54:07:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:54:07:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:54:07:       errno: -61,
+2025-06-20T11:54:07:       code: 'ECONNREFUSED',
+2025-06-20T11:54:07:       syscall: 'connect',
+2025-06-20T11:54:07:       address: '::1',
+2025-06-20T11:54:07:       port: 5432
+2025-06-20T11:54:07:     },
+2025-06-20T11:54:07:     Error: connect ECONNREFUSED 127.0.0.1:5432
+2025-06-20T11:54:07:         at createConnectionError (node:net:1677:14)
+2025-06-20T11:54:07:         at afterConnectMultiple (node:net:1707:16)
+2025-06-20T11:54:07:         at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+2025-06-20T11:54:07:       errno: -61,
+2025-06-20T11:54:07:       code: 'ECONNREFUSED',
+2025-06-20T11:54:07:       syscall: 'connect',
+2025-06-20T11:54:07:       address: '127.0.0.1',
+2025-06-20T11:54:07:       port: 5432
+2025-06-20T11:54:07:     }
+2025-06-20T11:54:07:   ]
+2025-06-20T11:54:07: }
+2025-06-20T11:55:44: Database error: error: invalid input syntax for type uuid: "test-session"
+2025-06-20T11:55:44:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T11:55:44:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T11:55:44:     at async Object.create (webpack-internal:///(rsc)/./lib/database.ts:84:28)
+2025-06-20T11:55:44:     at async POST (webpack-internal:///(rsc)/./app/api/movies/route.ts:82:27)
+2025-06-20T11:55:44:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T11:55:44:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T11:55:44:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T11:55:44:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T11:55:44:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T11:55:44:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T11:55:44:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T11:55:44:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T11:55:44:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T11:55:44:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T11:55:44:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T11:55:44:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T11:55:44:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T11:55:44:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T11:55:44:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T11:55:44:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T11:55:44:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T11:55:44:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T11:55:44:   length: 144,
+2025-06-20T11:55:44:   severity: 'ERROR',
+2025-06-20T11:55:44:   code: '22P02',
+2025-06-20T11:55:44:   detail: undefined,
+2025-06-20T11:55:44:   hint: undefined,
+2025-06-20T11:55:44:   position: undefined,
+2025-06-20T11:55:44:   internalPosition: undefined,
+2025-06-20T11:55:44:   internalQuery: undefined,
+2025-06-20T11:55:44:   where: "unnamed portal parameter $2 = '...'",
+2025-06-20T11:55:44:   schema: undefined,
+2025-06-20T11:55:44:   table: undefined,
+2025-06-20T11:55:44:   column: undefined,
+2025-06-20T11:55:44:   dataType: undefined,
+2025-06-20T11:55:44:   constraint: undefined,
+2025-06-20T11:55:44:   file: 'uuid.c',
+2025-06-20T11:55:44:   line: '133',
+2025-06-20T11:55:44:   routine: 'string_to_uuid'
+2025-06-20T11:55:44: }
+2025-06-20T12:01:46:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T12:17:51:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T12:43:25:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T13:12:24:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T13:46:41:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T14:36:55:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T17:45:14: Unexpected error clearing vote: error: invalid input syntax for type uuid: "demo-clear-all"
+2025-06-20T17:45:14:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T17:45:14:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T17:45:14:     at async Object.getByUserAndSession (webpack-internal:///(rsc)/./lib/database.ts:223:28)
+2025-06-20T17:45:14:     at async DELETE (webpack-internal:///(rsc)/./app/api/votes/clear/route.ts:34:30)
+2025-06-20T17:45:14:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T17:45:14:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T17:45:14:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T17:45:14:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T17:45:14:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T17:45:14:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T17:45:14:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T17:45:14:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T17:45:14:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T17:45:14:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T17:45:14:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T17:45:14:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T17:45:14:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T17:45:14:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T17:45:14:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T17:45:14:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T17:45:14:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T17:45:14:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T17:45:14:   length: 146,
+2025-06-20T17:45:14:   severity: 'ERROR',
+2025-06-20T17:45:14:   code: '22P02',
+2025-06-20T17:45:14:   detail: undefined,
+2025-06-20T17:45:14:   hint: undefined,
+2025-06-20T17:45:14:   position: undefined,
+2025-06-20T17:45:14:   internalPosition: undefined,
+2025-06-20T17:45:14:   internalQuery: undefined,
+2025-06-20T17:45:14:   where: "unnamed portal parameter $2 = '...'",
+2025-06-20T17:45:14:   schema: undefined,
+2025-06-20T17:45:14:   table: undefined,
+2025-06-20T17:45:14:   column: undefined,
+2025-06-20T17:45:14:   dataType: undefined,
+2025-06-20T17:45:14:   constraint: undefined,
+2025-06-20T17:45:14:   file: 'uuid.c',
+2025-06-20T17:45:14:   line: '133',
+2025-06-20T17:45:14:   routine: 'string_to_uuid'
+2025-06-20T17:45:14: }
+2025-06-20T17:45:15: Unexpected error clearing vote: error: invalid input syntax for type uuid: "demo-clear-all"
+2025-06-20T17:45:15:     at /Users/ras/dev/nospoilers/node_modules/pg-pool/index.js:45:11
+2025-06-20T17:45:15:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-06-20T17:45:15:     at async Object.getByUserAndSession (webpack-internal:///(rsc)/./lib/database.ts:223:28)
+2025-06-20T17:45:15:     at async DELETE (webpack-internal:///(rsc)/./app/api/votes/clear/route.ts:34:30)
+2025-06-20T17:45:15:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+2025-06-20T17:45:15:     at async eT.execute (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+2025-06-20T17:45:15:     at async eT.handle (/Users/ras/dev/nospoilers/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+2025-06-20T17:45:15:     at async doRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1366:42)
+2025-06-20T17:45:15:     at async cacheEntry.responseCache.get.routeKind (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1588:28)
+2025-06-20T17:45:15:     at async DevServer.renderToResponseWithComponentsImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1496:28)
+2025-06-20T17:45:15:     at async DevServer.renderPageComponent (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1924:24)
+2025-06-20T17:45:15:     at async DevServer.renderToResponseImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:1962:32)
+2025-06-20T17:45:15:     at async DevServer.pipeImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:922:25)
+2025-06-20T17:45:15:     at async NextNodeServer.handleCatchallRenderRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/next-server.js:272:17)
+2025-06-20T17:45:15:     at async DevServer.handleRequestImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/base-server.js:818:17)
+2025-06-20T17:45:15:     at async /Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+2025-06-20T17:45:15:     at async Span.traceAsyncFn (/Users/ras/dev/nospoilers/node_modules/next/dist/trace/trace.js:154:20)
+2025-06-20T17:45:15:     at async DevServer.handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+2025-06-20T17:45:15:     at async invokeRender (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:179:21)
+2025-06-20T17:45:15:     at async handleRequest (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:359:24)
+2025-06-20T17:45:15:     at async requestHandlerImpl (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/router-server.js:383:13)
+2025-06-20T17:45:15:     at async Server.requestListener (/Users/ras/dev/nospoilers/node_modules/next/dist/server/lib/start-server.js:141:13) {
+2025-06-20T17:45:15:   length: 146,
+2025-06-20T17:45:15:   severity: 'ERROR',
+2025-06-20T17:45:15:   code: '22P02',
+2025-06-20T17:45:15:   detail: undefined,
+2025-06-20T17:45:15:   hint: undefined,
+2025-06-20T17:45:15:   position: undefined,
+2025-06-20T17:45:15:   internalPosition: undefined,
+2025-06-20T17:45:15:   internalQuery: undefined,
+2025-06-20T17:45:15:   where: "unnamed portal parameter $2 = '...'",
+2025-06-20T17:45:15:   schema: undefined,
+2025-06-20T17:45:15:   table: undefined,
+2025-06-20T17:45:15:   column: undefined,
+2025-06-20T17:45:15:   dataType: undefined,
+2025-06-20T17:45:15:   constraint: undefined,
+2025-06-20T17:45:15:   file: 'uuid.c',
+2025-06-20T17:45:15:   line: '133',
+2025-06-20T17:45:15:   routine: 'string_to_uuid'
+2025-06-20T17:45:15: }
+2025-06-20T17:45:16:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-20T23:10:00:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-21T01:22:31:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-21T02:35:31:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-06-21T04:35:52:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+2025-07-06T14:58:35:  ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
